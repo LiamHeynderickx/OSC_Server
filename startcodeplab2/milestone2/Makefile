@@ -4,5 +4,8 @@ all: main.c sensor_db.h sensor_db.c logger.h logger.c
 run: all
 	./main.out
 
+clean:
+	rm -rf *.o
+
 zip:
 	zip milestone2.zip *.c *.h Makefile
