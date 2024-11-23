@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "config.h"
 
+
 int main()
 {
     FILE *f = open_db("sensor_db.csv", true);
