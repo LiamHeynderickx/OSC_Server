@@ -8,50 +8,43 @@
 #include "config.h"
 #include <inttypes.h>
 #include <unistd.h>
-
+#include <string.h>
 #include "logger.h"
+#include <sys/wait.h>
 
 
-static int pipe_fd[2];
-static int logger_pid;
 
 FILE * open_db(char * filename, bool append){ //creates sensor as parent and logger as child
 
-    if (pipe(pipe_fd) == -1) {
-        printf("pipe error");
-        exit(1);
+    if (create_log_process() == -1) {
+        fprintf(stderr, "Logger creation failed.\n");
+        return NULL;
     }
 
-    logger_pid = fork(); //creates parent and child
-
-    if (logger_pid < 0) { //error
-        printf("fork error");
-        exit(1);
+    FILE *df = fopen(filename, append ? "a" : "w");
+    if (df) {
+        write_to_log_process("Data file opened.\n");
+    } else {
+        write_to_log_process("Error opening data file.\n");
     }
-    if (logger_pid == 0) { //child (logger) create log process
-        close(pipe_fd[1]); //close write end
-        int log = create_log_process();
-        if (log == -1) exit(2);
-        exit(0);
-    }
-
-    //parent (sensor)
-    close(pipe_fd[0]); //close read end
-
-    FILE *fp = fopen(filename, append ? "a" : "w");
-
-    if (fp != NULL) {
-
-    }
-
-    return fp;
+    return df;
 
 }
 
 int insert_sensor(FILE * f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts){
+
+    if(f == NULL) {
+        write_to_log_process("File pointer null during insert.\n");
+    }
+
     int ret = fprintf(f, "%"PRIu16", %lf, %li\n", id, value, ts);
+
+    if(ret < 0) write_to_log_process("Error writing to data file.\n");
+
+    write_to_log_process("Data inserted.\n");
     fflush(f);
-    return ret;
+    return 0;
+
 }
 
 int close_db(FILE * f){
@@ -60,35 +53,16 @@ int close_db(FILE * f){
         return -1;
     }
 
-    if (logger_pid < 0) { //error
-        printf("fork error");
-        return -1;
+    int result = fclose(f);
+
+    if(result == 0){
+        // printf("Sensor File Closed Succesfully\n");
+        write_to_log_process("Data file closed.\n");
+        end_log_process();
+        return 0;
     }
 
-    int ret = 0;
+    printf("ERROR: close_db() failed \n");
+    return -1;
 
-    if (logger_pid > 0) {
-        printf("closing db parent\n");
-        ret = fclose(f);
-        if (ret != 0) printf("sensor close error");
-    }
-
-    // if (logger_pid == 0 && ret == 0) { //child (logger) close log process, make sure sensor file closed
-    //     printf("dgdgdfgdfgdfg");
-    //     int logClose = end_log_process();
-    //     if (logClose == -1) {
-    //         printf("end_log_process() error");
-    //         return -1;
-    //     }
-    // }
-
-    // int logClose = end_log_process();
-    // if (logClose == -1) {
-    //     printf("log close error");
-    //     return -1;
-    // }
-
-    close(pipe_fd[1]); //close parent write let child die
-
-    return ret;
 }
