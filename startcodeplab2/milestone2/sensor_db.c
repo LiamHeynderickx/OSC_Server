@@ -33,13 +33,16 @@ FILE * open_db(char * filename, bool append){ //creates sensor as parent and log
 
 int insert_sensor(FILE * f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts){
 
-    if(f == NULL) {
+    if(!f) {
         write_to_log_process("File pointer null during insert.\n");
     }
 
     int ret = fprintf(f, "%"PRIu16", %lf, %li\n", id, value, ts);
 
-    if(ret < 0) write_to_log_process("Error writing to data file.\n");
+    if(ret < 0) {
+        write_to_log_process("Error writing to data file.\n");
+        return -1;
+    };
 
     write_to_log_process("Data inserted.\n");
     fflush(f);
@@ -53,6 +56,7 @@ int close_db(FILE * f){
         return -1;
     }
 
+    fflush(f);
     int result = fclose(f);
 
     if(result == 0){

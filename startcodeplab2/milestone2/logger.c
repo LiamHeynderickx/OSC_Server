@@ -22,13 +22,10 @@ static pid_t logger_pid = 0;
 
 
 int write_to_log_process(char *msg) { //write message to buffer
-    if (logger_pid == 0) {
-        printf("Logger Error");
+    if (logger_pid == 0 || write(pipe_fd[1], msg, strlen(msg)) == -1) {
+        printf("Error writing to pipe\n");
+        return -1;
     }
-    if (write(pipe_fd[1], msg, strlen(msg)) == -1) { //writes message to buffer and then checks for error
-        printf("Pipe Error");
-    }
-
     return 0;
 }
 
@@ -37,7 +34,7 @@ int write_to_log_process(char *msg) { //write message to buffer
 int create_log_process() {
 
     if (pipe(pipe_fd) == -1) { //check for pipe error
-        printf("pipe error");
+        printf("Create pipe error\n");
         return -1;
     }
 
@@ -76,13 +73,16 @@ int create_log_process() {
         return 0; //no errors
 
     }
+    else {
+        //parent sensor process
+        close(pipe_fd[READ_END]);
+        return 0;
+    }
 
-    //parent sensor process
-    close(pipe_fd[READ_END]);
-    return 0;
 
 
 }
+
 
 
 
