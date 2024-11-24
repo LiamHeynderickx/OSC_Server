@@ -110,6 +110,6 @@ int end_log_process() {
         return -1;
     }
 
-    printf("Logger process terminated successfully.\n");
+    // printf("Logger process terminated successfully.\n");
     return 0;
 }

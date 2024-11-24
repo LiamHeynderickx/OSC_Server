@@ -35,7 +35,7 @@ int insert_sensor(FILE *f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts)
 
     ts = time(NULL);
 
-    printf("Inserting: ID=%d, Value=%lf, Timestamp=%ld\n", id, value, ts);
+    // printf("Inserting: ID=%d, Value=%lf, Timestamp=%ld\n", id, value, ts); //used for error checking
     write_to_log_process("Attempting to insert data.\n");
 
     int ret = fprintf(f, "%" PRIu16 ", %lf, %li\n", id, value, ts);
