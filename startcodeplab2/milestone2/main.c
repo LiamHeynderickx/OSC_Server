@@ -32,6 +32,6 @@ int main()
     sleep(5);
     insert_sensor(f, 4, v, ts);
 
-    close_db(f);
+    close_db(f); //closes log and sensor files
     return 0;
 }

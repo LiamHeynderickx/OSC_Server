@@ -34,10 +34,7 @@ int create_log_process() {
         printf("Failed to open log file\n");
         return -1;
     }
-    else {
-        write_to_log_process("Created log file\n");
-    }
-
+    write_to_log_process("Data file opened.\n");
     return 0;
 }
 
@@ -52,10 +49,12 @@ int end_log_process() {
     int result = fclose(log_file);
 
     if(result == 0){
-        printf("File Closed Succesfully\n");
+        printf("Log File Closed Succesfully\n");
+        write_to_log_process("Data file closed.\n");
     }
     else{
         printf("ERROR: end_log_process() failed \n");
+        return -1;
     }
 
     return result;

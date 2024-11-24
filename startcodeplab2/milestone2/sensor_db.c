@@ -60,14 +60,35 @@ int close_db(FILE * f){
         return -1;
     }
 
-    int result = fclose(f);
-
-    if(result == 0){
-        printf("File Closed Succesfully\n");
-    }
-    else{
-        printf("ERROR: close_db() failed \n");
+    if (logger_pid < 0) { //error
+        printf("fork error");
+        return -1;
     }
 
-    return result;
+    int ret = 0;
+
+    if (logger_pid > 0) {
+        printf("closing db parent\n");
+        ret = fclose(f);
+        if (ret != 0) printf("sensor close error");
+    }
+
+    // if (logger_pid == 0 && ret == 0) { //child (logger) close log process, make sure sensor file closed
+    //     printf("dgdgdfgdfgdfg");
+    //     int logClose = end_log_process();
+    //     if (logClose == -1) {
+    //         printf("end_log_process() error");
+    //         return -1;
+    //     }
+    // }
+
+    // int logClose = end_log_process();
+    // if (logClose == -1) {
+    //     printf("log close error");
+    //     return -1;
+    // }
+
+    close(pipe_fd[1]); //close parent write let child die
+
+    return ret;
 }
