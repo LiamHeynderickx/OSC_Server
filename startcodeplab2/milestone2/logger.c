@@ -58,7 +58,12 @@ int create_log_process() {
             ssize_t bytes_read = read(pipe_fd[0], buffer, BUFFER_SIZE - 1);
             if (bytes_read <= 0) break;
             buffer[bytes_read] = '\0';
-            if (strcmp(buffer, "TERMINATE\n") == 0) break; //close all files
+            if (strcmp(buffer, "TERMINATE\n") == 0) {
+                time_t now = time(NULL);
+                fprintf(log_file, "%d - %s - Logger process terminating.\n", sequence_number++, strtok(ctime(&now), "\n"));
+                fflush(log_file);
+                break;
+            }
 
             //read from buffer
             time_t now = time(NULL); // Get the current time
@@ -92,16 +97,8 @@ int end_log_process() {
 
     if (termination_status == -1) return -1; //error handling
 
-    if (close(pipe_fd[WRITE_END]) == -1) {
-        printf("close pipe error");
-        return -1; // Return error
-    }
-
-    if (waitpid(logger_pid, NULL, 0) == -1) {
-        perror("Error waiting for logger process to terminate");
-        return -1; // Return error
-    }
-
+    close(pipe_fd[1]);
+    waitpid(logger_pid, NULL, 0); //wait for logger to terminate
     return 0;
 }
 

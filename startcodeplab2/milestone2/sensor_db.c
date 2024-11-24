@@ -18,6 +18,7 @@ FILE * open_db(char * filename, bool append){ //creates sensor as parent and log
 
     if (create_log_process() == -1) {
         fprintf(stderr, "Logger creation failed.\n");
+        // fflush(filename);
         return NULL;
     }
 
@@ -38,6 +39,7 @@ int insert_sensor(FILE * f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts
     }
 
     int ret = fprintf(f, "%"PRIu16", %lf, %li\n", id, value, ts);
+    // fflush(f);
 
     if(ret < 0) {
         write_to_log_process("Error writing to data file.\n");
@@ -51,22 +53,12 @@ int insert_sensor(FILE * f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts
 }
 
 int close_db(FILE * f){
-    if(f == NULL){
-        printf("ERROR: close_db() called with NULL pointer\n");
-        return -1;
-    }
-
-    fflush(f);
-    int result = fclose(f);
-
-    if(result == 0){
-        // printf("Sensor File Closed Succesfully\n");
+    if (f) {
+        fclose(f);
         write_to_log_process("Data file closed.\n");
         end_log_process();
         return 0;
     }
-
-    printf("ERROR: close_db() failed \n");
     return -1;
 
 }
