@@ -87,6 +87,7 @@ int create_log_process() {
         exit(0);
     }
 
+    //parent sensor_db.c
     close(pipe_fd[READ_END]);
     return 0;
 }
