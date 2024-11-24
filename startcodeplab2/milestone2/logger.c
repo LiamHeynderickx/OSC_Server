@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 
 #define LOG_FILE "gateway.log"
+
 #define BUFFER_SIZE 256
 #define WRITE_END 1
 #define READ_END 0
@@ -22,10 +23,10 @@ int write_to_log_process(char *msg) {
         return -1;
     }
 
-    // Prepare a formatted log message with sequence number and timestamp
+
     char formatted_msg[BUFFER_SIZE];
     time_t now = time(NULL);
-    snprintf(formatted_msg, BUFFER_SIZE, "%d - %s - %s", sequence_number++, strtok(ctime(&now), "\n"), msg);
+    snprintf(formatted_msg, BUFFER_SIZE, "%d - %s - %s", sequence_number++, strtok(ctime(&now), "\n"), msg); //formatted log msg
 
 
     // Write the formatted message to the pipe
@@ -62,7 +63,9 @@ int create_log_process() {
         }
 
         char buffer[BUFFER_SIZE];
-        while (1) {
+
+
+        while (1) { //continuous loop keeps log child open
             ssize_t bytes_read = read(pipe_fd[0], buffer, BUFFER_SIZE - 1);
             if (bytes_read <= 0) break;
 
@@ -74,7 +77,7 @@ int create_log_process() {
                 break;
             }
 
-            fprintf(log_file, "%s", buffer); // Write the fully formatted message
+            fprintf(log_file, "%s", buffer);
             fflush(log_file);
         }
 

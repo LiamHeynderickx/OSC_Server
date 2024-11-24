@@ -33,7 +33,6 @@ int insert_sensor(FILE *f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts)
         return -1;
     }
 
-    // Obtain a fresh timestamp to ensure uniqueness
     ts = time(NULL);
 
     printf("Inserting: ID=%d, Value=%lf, Timestamp=%ld\n", id, value, ts);
@@ -46,7 +45,7 @@ int insert_sensor(FILE *f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts)
     }
 
     write_to_log_process("Data inserted.\n");
-    fflush(f); // Ensure data is written
+    fflush(f); //clear buffer and ensure data write
     return 0;
 }
 
