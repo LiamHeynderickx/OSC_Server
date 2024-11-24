@@ -1,35 +1,11 @@
-0 - Sun Nov 24 16:28:05 2024 - Data file opened.
-1 - Sun Nov 24 16:28:06 2024 - Data inserted.
+0 - Sun Nov 24 17:27:49 2024 - Data file opened.
+1 - Sun Nov 24 17:27:50 2024 - Attempting to insert data.
 Data inserted.
+2 - Sun Nov 24 17:27:50 2024 - Attempting to insert data.
 Data inserted.
+Attempting to insert data.
 Data inserted.
-Data file closed.
-TERMINATE
-0 - Sun Nov 24 16:28:19 2024 - Data file opened.
-1 - Sun Nov 24 16:28:20 2024 - Data inserted.
-2 - Sun Nov 24 16:28:20 2024 - Data inserted.
+3 - Sun Nov 24 17:27:55 2024 - Attempting to insert data.
 Data inserted.
-Data inserted.
-Data file closed.
-TERMINATE
-0 - Sun Nov 24 16:28:30 2024 - Data file opened.
-1 - Sun Nov 24 16:28:31 2024 - Data inserted.
-2 - Sun Nov 24 16:28:31 2024 - Data inserted.
-3 - Sun Nov 24 16:28:31 2024 - Data inserted.
-4 - Sun Nov 24 16:28:31 2024 - Data inserted.
-5 - Sun Nov 24 16:28:31 2024 - Data file closed.
-6 - Sun Nov 24 16:28:31 2024 - Logger process terminating.
-0 - Sun Nov 24 16:28:36 2024 - Data file opened.
-1 - Sun Nov 24 16:28:37 2024 - Data inserted.
-2 - Sun Nov 24 16:28:37 2024 - Data inserted.
-3 - Sun Nov 24 16:28:37 2024 - Data inserted.
-4 - Sun Nov 24 16:28:37 2024 - Data inserted.
-5 - Sun Nov 24 16:28:37 2024 - Data file closed.
-TERMINATE
-0 - Sun Nov 24 16:28:41 2024 - Data file opened.
-1 - Sun Nov 24 16:28:42 2024 - Data inserted.
-2 - Sun Nov 24 16:28:42 2024 - Data inserted.
-Data inserted.
-Data inserted.
-Data file closed.
+Data file closed successfully.
 TERMINATE

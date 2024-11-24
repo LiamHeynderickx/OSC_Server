@@ -29,7 +29,7 @@ int main()
     v = 0.003;
     ts = time(NULL);
     insert_sensor(f, id, v, ts);
-    // sleep(5);
+    sleep(5);
     insert_sensor(f, 4, v, ts);
 
     close_db(f); //closes log and sensor files

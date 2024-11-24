@@ -8,7 +8,7 @@
 #include <sys/wait.h>
 
 #define LOG_FILE "gateway.log"
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 256
 #define WRITE_END 1
 #define READ_END 0
 
@@ -21,13 +21,20 @@ static pid_t logger_pid = 0;
 
 
 
-int write_to_log_process(char *msg) { //write message to buffer
-    if (logger_pid == 0 || write(pipe_fd[1], msg, strlen(msg)) == -1) {
-        printf("Error writing to pipe\n");
+int write_to_log_process(char *msg) {
+    if (logger_pid == 0) {
+        fprintf(stderr, "Logger process not initialized.\n");
+        return -1;
+    }
+    ssize_t bytes_written = write(pipe_fd[1], msg, strlen(msg));
+    if (bytes_written == -1) {
+        perror("Error writing to pipe");
         return -1;
     }
     return 0;
 }
+
+
 
 
 
@@ -39,6 +46,11 @@ int create_log_process() {
     }
 
     logger_pid = fork();
+
+    if (logger_pid == -1) {
+        printf("Fork error\n");
+        return -1;
+    }
 
     if (logger_pid == 0) { //child (logger) create log process
 
@@ -56,21 +68,24 @@ int create_log_process() {
 
         while (1) {
             ssize_t bytes_read = read(pipe_fd[0], buffer, BUFFER_SIZE - 1);
-            if (bytes_read <= 0) break;
+            if (bytes_read <= 0) break; // EOF or error
+
             buffer[bytes_read] = '\0';
+
             if (strcmp(buffer, "TERMINATE\n") == 0) {
                 time_t now = time(NULL);
                 fprintf(log_file, "%d - %s - Logger process terminating.\n", sequence_number++, strtok(ctime(&now), "\n"));
                 fflush(log_file);
+                fsync(fileno(log_file)); // Ensure log is fully written
                 break;
             }
 
-            //read from buffer
-            time_t now = time(NULL); // Get the current time
+            time_t now = time(NULL);
             fprintf(log_file, "%d - %s - %s", sequence_number++, strtok(ctime(&now), "\n"), buffer);
-            fflush(log_file); // Flush to clear the buffer into the file immediately
-
+            fflush(log_file);
+            fsync(fileno(log_file)); // Ensure log is fully written
         }
+
 
         fclose(log_file);
         close(pipe_fd[READ_END]);
@@ -78,13 +93,10 @@ int create_log_process() {
         return 0; //no errors
 
     }
-    else {
-        //parent sensor process
-        close(pipe_fd[READ_END]);
-        return 0;
-    }
 
-
+    //parent
+    close(pipe_fd[READ_END]);
+    return 0;
 
 }
 
@@ -92,14 +104,26 @@ int create_log_process() {
 
 
 int end_log_process() {
+    if (write_to_log_process("TERMINATE\n") == -1) {
+        fprintf(stderr, "Error sending terminate message to logger.\n");
+        return -1;
+    }
 
-    int termination_status = write_to_log_process("TERMINATE\n");
+    if (close(pipe_fd[WRITE_END]) == -1) {
+        perror("Error closing pipe");
+        return -1;
+    }
 
-    if (termination_status == -1) return -1; //error handling
+    if (waitpid(logger_pid, NULL, 0) == -1) {
+        perror("Error waiting for logger process to terminate");
+        return -1;
+    }
 
-    close(pipe_fd[1]);
-    waitpid(logger_pid, NULL, 0); //wait for logger to terminate
+    printf("Logger process terminated successfully.\n");
     return 0;
 }
+
+
+
 
 
