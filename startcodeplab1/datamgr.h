@@ -1,5 +1,5 @@
 /**
- * \author {AUTHOR}
+* \author Liam Heynderickx, all function headers and descriptions written by Bert Lagaisse
  */
 
 #ifndef DATAMGR_H_
@@ -12,6 +12,11 @@
 #ifndef RUN_AVG_LENGTH
 #define RUN_AVG_LENGTH 5
 #endif
+
+//temporary
+#define SET_MAX_TEMP 100
+#define SET_MIN_TEMP 0
+
 
 #ifndef SET_MAX_TEMP
 #error SET_MAX_TEMP not set

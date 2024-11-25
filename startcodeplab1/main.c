@@ -1,3 +1,9 @@
+/**
+* \author Liam Heynderickx, all function headers and descriptions written by Bert Lagaisse
+ */
+
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
