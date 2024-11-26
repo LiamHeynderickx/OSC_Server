@@ -11,19 +11,28 @@
 
 
 
-dplist_t *data_list;
+static dplist_t *data_list;
 
 typedef struct {
     sensor_id_t sensor_id;
     uint16_t room_id;
     sensor_value_t window_running_avg[RUN_AVG_LENGTH];
-    int current_index; // To manage circular buffer
-    int num_readings;  // Track the number of readings (up to RUN_AVG_LENGTH)
+    // int current_index; // To manage circular buffer
+    // int num_readings;  // Track the number of readings (up to RUN_AVG_LENGTH)
     sensor_ts_t last_modified;
+    sensor_value_t running_avg_value; //used for debug purposes
 } list_element;
 
+static sensor_value_t get_running_avg(sensor_value_t const window_running_avg[RUN_AVG_LENGTH]) {
+    float sum = 0;
+    for (int i = 0; i < RUN_AVG_LENGTH; i++) {
+        sum += window_running_avg[i];
+    }
+    return sum / (float)RUN_AVG_LENGTH;
+}
 
-void datamgr_print_sensors(dplist_t *data_list) { // for testing
+
+static void datamgr_print_sensors(dplist_t *data_list) { // for testing
     if (!data_list || dpl_size(data_list) == 0) {
         printf("The list is empty.\n");
         return;
@@ -33,14 +42,10 @@ void datamgr_print_sensors(dplist_t *data_list) { // for testing
         list_element *e = (list_element *)dpl_get_element_at_index(data_list, i);
         if (e) {
             // Calculate running average
-            double avg = 0;
-            for (int j = 0; j < RUN_AVG_LENGTH; j++) {
-                avg += e->window_running_avg[j];
-            }
-            avg /= RUN_AVG_LENGTH;
+            sensor_value_t avg = get_running_avg(e->window_running_avg);
 
             // Print sensor details
-            printf("Sensor ID: %u, Room ID: %u, Running Avg: %.2f, Last Modified: %ld\n",
+            printf("Sensor ID: %u, Room ID: %u, Running Avg: %.4f, Last Modified: %ld\n",
                    e->sensor_id,
                    e->room_id,
                    avg,
@@ -91,6 +96,8 @@ void *element_copy(void *element) {
 }
 
 
+
+
 /**
  *  This method holds the core functionality of your datamgr. It takes in 2 file pointers to the sensor files and parses them.
  *  When the method finishes all data should be in the internal pointer list and all log messages should be printed to stderr.
@@ -129,10 +136,9 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data) {
 
         e->sensor_id = sensorID;
         e->room_id = roomID;
-        e->current_index = 0;
-        e->num_readings = 0;
+
         for (int i = 0; i < RUN_AVG_LENGTH; i++) {
-            e->window_running_avg[i] = 0.0;
+            e->window_running_avg[i] = ((float) (SET_MAX_TEMP + SET_MIN_TEMP)) / 2.0; //set values in range so averaage moves from here
         }
         e->last_modified = 0;
 
@@ -141,10 +147,63 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data) {
     }
 
     //now i need to add in measurements, running average and last modified from sensors_data
-    // Read sensor data
+    // Read sensor data from binary file
+
+    sensor_data_t record;
+    while (fread(&record, sizeof(sensor_data_t), 1, fp_sensor_data) == 1) { // reads from binary
+
+        // Process the record ADD it to list
+
+        list_element *tmp = NULL;
+        int found = false;
+        for (int i = 0; i < dpl_size(data_list); ++i) {
+            tmp = (list_element *) dpl_get_element_at_index(data_list, i);
+            if (tmp->sensor_id == record.id) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            for (int i = RUN_AVG_LENGTH - 1; i > 0; --i) { //shift right and store values for running avg
+                tmp->window_running_avg[i] = tmp->window_running_avg[i - 1];
+            }
+            //adds values for running avg
+            tmp->window_running_avg[0] = record.value;
+            tmp->last_modified = record.ts;
+
+            //calculate running avg:
+            sensor_value_t running_avg = get_running_avg(tmp->window_running_avg);
+
+            if (tmp->sensor_id == 132) {
+                printf("Sensor id %d, Running Avg: %.2f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified);
+            }
+
+            //check if between min and max set temps
+            if (running_avg > SET_MAX_TEMP) {
+                //log if temp too high here
+                // printf("Sensor id %d is too hot: %.2f Celsius, time: %ld \n", tmp->sensor_id, tmp->running_avg_value, tmp->last_modified);
+            }
+            else if (running_avg < SET_MIN_TEMP) {
+                //log if temp too low here
+                // printf("Sensor id %d is too cold: %.2f Celsius\n", tmp->sensor_id, tmp->running_avg_value);
+            }
+            else {
+                //do nothing
+            }
+        }
+        else {
+            printf("Senosr id wrong");
+        }
 
 
-    // datamgr_print_sensors(data_list);
+    }
+    if (ferror(fp_sensor_data)) {
+        perror("Error reading file");
+    }
+
+    printf("\n\n\n\n\n\n");
+    datamgr_print_sensors(data_list);
 
 }
 

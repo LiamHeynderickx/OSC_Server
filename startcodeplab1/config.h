@@ -15,11 +15,13 @@ typedef time_t sensor_ts_t;         // UTC timestamp as returned by time() - not
 /**
  * structure to hold sensor data
  */
+#pragma pack(push, 1) //removes padding causing reading errors
 typedef struct {
     sensor_id_t id;         /** < sensor id */
     sensor_value_t value;   /** < sensor value */
     sensor_ts_t ts;         /** < sensor timestamp */
 } sensor_data_t;
+#pragma pack(pop)
 
 
 #endif /* _CONFIG_H_ */

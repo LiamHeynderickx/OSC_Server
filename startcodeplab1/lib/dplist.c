@@ -276,3 +276,4 @@ void *dpl_get_element_at_reference(dplist_t *list, dplist_node_t *reference) {
     }
     return NULL;
 }
+
