@@ -22,8 +22,11 @@ int main(){
 
     datamgr_parse_sensor_files(map, data);
 
+
     datamgr_free();
 
     fclose(map);
     fclose(data);
+
+    printf("Bye World\n");
 }
