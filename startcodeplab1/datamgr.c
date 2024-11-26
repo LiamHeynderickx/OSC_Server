@@ -164,7 +164,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data) {
             }
         }
 
-        if (found) {
+        if (found) { //might have to move
             for (int i = RUN_AVG_LENGTH - 1; i > 0; --i) { //shift right and store values for running avg
                 tmp->window_running_avg[i] = tmp->window_running_avg[i - 1];
             }
