@@ -1,5 +1,5 @@
 /**
- * \author {AUTHOR}
+* \author Liam Heynderickx
  */
 
 #include <stdio.h>
@@ -10,107 +10,124 @@
 #include <pthread.h>
 
 pthread_mutex_t conn_mutex = PTHREAD_MUTEX_INITIALIZER;
-int conn_counter = 0; // Global connection counter
-int conn_terminations = 0; //counter for closed connections
+pthread_cond_t conn_cond = PTHREAD_COND_INITIALIZER;
+int conn_counter = 0;         // Global connection counter
+int conn_terminations = 0;    // Counter for closed connections
 
-
-/**
- * Implements a sequential test server (only one connection at the same time)
- */
-
-void * client_handler(void* arg) {
-
+void* client_handler(void* arg) {
     tcpsock_t* client = (tcpsock_t*)arg;
     sensor_data_t data;
     int bytes, result;
 
-    do { //client handler
-        // read sensor ID
+    do {
+        // Read sensor ID
         bytes = sizeof(data.id);
-        result = tcp_receive(client, (void *) &data.id, &bytes);
-        // if (result != TCP_NO_ERROR) break;
-        // read temperature
+        result = tcp_receive(client, (void*)&data.id, &bytes);
+        if (result != TCP_NO_ERROR) break;
+
+        // Read temperature
         bytes = sizeof(data.value);
-        result = tcp_receive(client, (void *) &data.value, &bytes);
-        // if (result != TCP_NO_ERROR) break;
-        // read timestamp
+        result = tcp_receive(client, (void*)&data.value, &bytes);
+        if (result != TCP_NO_ERROR) break;
+
+        // Read timestamp
         bytes = sizeof(data.ts);
-        result = tcp_receive(client, (void *) &data.ts, &bytes);
-        // if (result != TCP_NO_ERROR) break;
+        result = tcp_receive(client, (void*)&data.ts, &bytes);
+        if (result != TCP_NO_ERROR) break;
 
-        if ((result == TCP_NO_ERROR) && bytes) {
-            printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
-                   (long int) data.ts);
-        }
-
+        printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
+               (long int)data.ts);
     } while (result == TCP_NO_ERROR);
 
     if (result == TCP_CONNECTION_CLOSED)
         printf("Peer has closed connection\n");
     else
-        printf("Error occured on connection to peer\n");
+        printf("Error occurred on connection to peer\n");
 
-    // close client
+    // Close client socket
     tcp_close(&client);
 
-    //inc counter
     pthread_mutex_lock(&conn_mutex);
     conn_terminations++;
+    // printf("terminations = %d\n", conn_terminations);
+
+    // Signal the main thread if all connections are terminated
+    if (conn_terminations == conn_counter) {
+        pthread_cond_signal(&conn_cond);
+    }
     pthread_mutex_unlock(&conn_mutex);
 
     return NULL;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     tcpsock_t *server, *client;
     pthread_t thread_id;
-    
-    if(argc < 3) {
-    	printf("Please provide the right arguments: first the port, then the max nb of clients");
-    	return -1;
+
+    if (argc < 3) {
+        printf("Please provide the right arguments: first the port, then the max number of clients\n");
+        return -1;
     }
-    
+
     int MAX_CONN = atoi(argv[2]);
     int PORT = atoi(argv[1]);
 
     printf("Test server is started\n");
+
     if (tcp_passive_open(&server, PORT) != TCP_NO_ERROR) exit(EXIT_FAILURE);
 
-    do { //do while
-        if (tcp_wait_for_connection(server, &client) != TCP_NO_ERROR) exit(EXIT_FAILURE);
+    pthread_mutex_lock(&conn_mutex);
+
+    while (conn_counter < MAX_CONN) { //has to be this otherwise termination fails
+        pthread_mutex_unlock(&conn_mutex);
+
+        // Wait for a client connection
+        if (tcp_wait_for_connection(server, &client) != TCP_NO_ERROR) {
+            perror("Failed to wait for connection");
+            continue;
+        }
+
         printf("Incoming client connection\n");
 
         pthread_mutex_lock(&conn_mutex);
-        conn_counter++;
-        pthread_mutex_unlock(&conn_mutex);
+        if (conn_counter < MAX_CONN) {
+            conn_counter++;
+            pthread_mutex_unlock(&conn_mutex);
 
-        //check if max connections reached
-        if (conn_counter<=MAX_CONN) {
-            //add client and create thread
-            //create new thread
+            printf("Incoming client connection succeeded\n");
+
+            // Create a thread for the client
             if (pthread_create(&thread_id, NULL, client_handler, (void*)client) != 0) {
                 perror("Failed to create thread");
                 tcp_close(&client);
                 continue;
             }
 
-            //close thread after handler is done
-            //join it with main thread
-            pthread_join(thread_id, NULL);
-        }
-        else {
-            //dont create new client
-            printf("Max number of clients reached, new client could not init");
+            // Detach the thread
+            pthread_detach(thread_id);
+        } else {
+            // Ensure the mutex is unlocked before rejecting the client
+            pthread_mutex_unlock(&conn_mutex);
+
+            // Print rejection message and close the client
+            printf("Max number of clients reached. New connection rejected.\n");
+            tcp_close(&client);
         }
 
-    } while (conn_terminations < conn_counter); //change this to only test when all clients are closed
+        pthread_mutex_lock(&conn_mutex);
+    }
 
+
+    // Wait until all client threads terminate
+    while (conn_terminations < MAX_CONN) {
+        pthread_cond_wait(&conn_cond, &conn_mutex);
+    }
+    pthread_mutex_unlock(&conn_mutex);
 
     if (tcp_close(&server) != TCP_NO_ERROR) exit(EXIT_FAILURE);
+    pthread_mutex_destroy(&conn_mutex);
+    pthread_cond_destroy(&conn_cond);
     printf("Test server is shutting down\n");
+
     return 0;
 }
-
-
-
-
