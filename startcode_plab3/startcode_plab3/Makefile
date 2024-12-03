@@ -18,5 +18,5 @@ runserver: test_server
 runclient1: sensor_node
 	./sensor_node 1 2 127.0.0.1 5678
 
-runclient2: client
+runclient2: sensor_node
 	./sensor_node 2 5 127.0.0.1 5678
