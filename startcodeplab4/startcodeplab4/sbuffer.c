@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "sbuffer.h"
+#include <pthread.h>
+#include <stdbool.h>
 
 /**
  * basic node for the buffer, these nodes are linked together to create the buffer

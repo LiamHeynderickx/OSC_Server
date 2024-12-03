@@ -7,6 +7,7 @@
 
 #include "config.h"
 
+
 #define SBUFFER_FAILURE -1
 #define SBUFFER_SUCCESS 0
 #define SBUFFER_NO_DATA 1
