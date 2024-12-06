@@ -5,6 +5,7 @@
 #include "sbuffer.h"
 
 #define SENSOR_FILE "sensor_data" //binary data file
+#define SENSOR_FILE_EMPTY "sensor_data_empty" //binary data file for testing only
 #define OUTPUT_FILE "sensor_data_out.csv"
 #define NUM_READERS 2
 
@@ -14,11 +15,14 @@ sbuffer_t *shared_buffer;
 pthread_mutex_t file_write_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
-//TODO add read and write threads
-
 //reads data from file and writes to buffer
 void *writer_thread(void *arg) { //*arg parameter required for the pthread_create function
     FILE *sens_file = fopen(SENSOR_FILE, "r");
+    if (!sens_file) {
+        perror("Error opening sensor file");
+        exit(EXIT_FAILURE); // Terminate the program
+    }
+    // FILE *sens_file = fopen(SENSOR_FILE_EMPTY, "r"); //for testing
     if (!sens_file) {
         perror("Failed to open sensor file");
         pthread_exit(NULL);
@@ -104,9 +108,6 @@ int main(){
     pthread_create(&writer, NULL, writer_thread, NULL);
     pthread_create(&reader1, NULL, reader_thread, (void *)file_out);
     pthread_create(&reader2, NULL, reader_thread, (void *)file_out);
-
-    printf("waiting");
-
     // Wait for threads to finish
     pthread_join(writer, NULL);
     pthread_join(reader1, NULL);
