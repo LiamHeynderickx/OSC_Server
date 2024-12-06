@@ -61,10 +61,10 @@ void *reader_thread(void *arg) { //*arg parameter required for the pthread_creat
             break;
         }
         pthread_mutex_lock(&file_write_mutex);
-        fprintf(file_out, "%hu,%.2f,%ld\n", data.id, data.value, data.ts);
+        fprintf(file_out, "%hu,%.4f,%ld\n", data.id, data.value, data.ts);
         fflush(file_out);
         pthread_mutex_unlock(&file_write_mutex);
-        printf("%hu,%.2f,%ld\n", data.id, data.value, data.ts);
+        // printf("%hu,%.4f,%ld\n", data.id, data.value, data.ts);//use for testing
         usleep(25000); // Sleep for 25ms
     }
 
