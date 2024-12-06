@@ -108,8 +108,9 @@ int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {
         buffer->tail = buffer->tail->next;
     }
 
-    pthread_cond_signal(&buffer->cond_var); // Signal waiting threads that data was inserted
     //this signals pthread_cond_wait(&buffer->cond_var, &buffer->mutex); that data is ready to be removed from buffer
+    pthread_cond_signal(&buffer->cond_var);
+
     pthread_mutex_unlock(&buffer->mutex);
 
     return SBUFFER_SUCCESS;
