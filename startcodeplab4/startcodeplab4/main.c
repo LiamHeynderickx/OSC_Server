@@ -3,6 +3,8 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "sbuffer.h"
+#include <string.h>
+#include <stdbool.h>
 
 #define SENSOR_FILE "sensor_data" //binary data file
 #define SENSOR_FILE_EMPTY "sensor_data_empty" //binary data file for testing only
@@ -87,6 +89,82 @@ int clear_file(const char *filename) {
 }
 
 
+bool output_test() {
+
+    //true indicates a failure somewhere
+    static bool has_error = false;
+
+    FILE *file_out = fopen(OUTPUT_FILE, "r");
+    if (!file_out) {
+        perror("Failed to open output file");
+        return true;
+    }
+
+    FILE *file_test_values = fopen("sensor_data_text", "r");
+    if (!file_test_values) {
+        perror("Failed to open test values file");
+        fclose(file_out);
+        return true;
+    }
+
+    char output_line[256];
+    char test_line[256];
+    int line_number = 1;
+
+    //because of the slight formatting difference between the two files we have to compare component by component
+
+    while (fgets(output_line, sizeof(output_line), file_out) &&
+           fgets(test_line, sizeof(test_line), file_test_values)) {
+        // Parse the CSV line into components
+        unsigned short id_out, id_test;
+        float value_out, value_test;
+        long timestamp_out, timestamp_test;
+
+        if (sscanf(output_line, "%hu,%f,%ld", &id_out, &value_out, &timestamp_out) != 3) {
+            printf("Error parsing output file at line %d: %s\n", line_number, output_line);
+            has_error = true;
+            continue;
+        }
+
+        // Parse the test file line
+        if (sscanf(test_line, "%hu %f %ld", &id_test, &value_test, &timestamp_test) != 3) {
+            printf("Error parsing test file at line %d: %s\n", line_number, test_line);
+            has_error = true;
+            continue;
+        }
+
+        // Compare parsed values
+        if (id_out != id_test || value_out != value_test || timestamp_out != timestamp_test) {
+            printf("Mismatch at line %d:\n", line_number);
+            printf("Output: %hu,%.4f,%ld\n", id_out, value_out, timestamp_out);
+            printf("Test:   %hu %.4f %ld\n", id_test, value_test, timestamp_test);
+            has_error = true;
+        } else {
+            // printf("Line %d matches: %hu,%.4f,%ld\n", line_number, id_out, value_out, timestamp_out); //use for testing
+        }
+
+        line_number++;
+    }
+
+    // Check for extra lines in either file
+    if (fgets(output_line, sizeof(output_line), file_out)) {
+        printf("Extra line in output file at line %d: %s\n", line_number, output_line);
+        has_error = true;
+    }
+    if (fgets(test_line, sizeof(test_line), file_test_values)) {
+        printf("Extra line in test file at line %d: %s\n", line_number, test_line);
+        has_error = true;
+    }
+
+    fclose(file_out);
+    fclose(file_test_values);
+
+    return has_error;
+}
+
+
+
+
 int main(){
 
     //clear sensor_data_out.csv for testing purposes
@@ -115,6 +193,21 @@ int main(){
 
     // Close the shared file after all threads finish
     fclose(file_out);
+
+    printf("Buffer operation complete\n");
+
+
+    //add tests
+    //what I found while testing:
+    //occasionally the order of the readings is changed, im not sure if this is something that should be protected against
+    //The integrity of the readings consistently appears reliable
+    //no data is lost usually
+    printf("Beginning tests. If no error messages then all tests passed\n");
+    if (output_test()) {
+        printf("Error in output file\n");
+    }
+    else printf("All tests passed\n");
+    printf("Tests complete\n");
 
     // Clean up
     sbuffer_free(&shared_buffer);
