@@ -41,7 +41,7 @@ int sbuffer_init(sbuffer_t **buffer) {
     return SBUFFER_SUCCESS;
 }
 
-//TODO
+
 int sbuffer_free(sbuffer_t **buffer) {
     sbuffer_node_t *dummy;
     if ((buffer == NULL) || (*buffer == NULL)) {
@@ -62,7 +62,7 @@ int sbuffer_free(sbuffer_t **buffer) {
     return SBUFFER_SUCCESS;
 }
 
-//TODO
+
 int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data) {
     sbuffer_node_t *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
@@ -89,7 +89,7 @@ int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data) {
     return SBUFFER_SUCCESS;
 }
 
-// TODO
+
 int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {
     sbuffer_node_t *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;

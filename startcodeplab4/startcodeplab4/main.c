@@ -172,6 +172,7 @@ int main(){
     clear_file(s_out);
 
     // Initialize shared buffer
+    printf("Buffer operation initializing\n");
     sbuffer_init(&shared_buffer);
 
     FILE *file_out = fopen(OUTPUT_FILE, "w"); // Open shared file stream
@@ -181,6 +182,7 @@ int main(){
     }
 
     pthread_t writer, reader1, reader2;
+    printf("Buffer operation started, data being sent...\n");
 
     // Create threads
     pthread_create(&writer, NULL, writer_thread, NULL);
@@ -194,7 +196,7 @@ int main(){
     // Close the shared file after all threads finish
     fclose(file_out);
 
-    printf("Buffer operation complete\n");
+    printf("Buffer operation complete\n\n\n");
 
 
     //add tests
@@ -202,12 +204,17 @@ int main(){
     //occasionally the order of the readings is changed, im not sure if this is something that should be protected against
     //The integrity of the readings consistently appears reliable
     //no data is lost usually
-    printf("Beginning tests. If no error messages then all tests passed\n");
-    if (output_test()) {
-        printf("Error in output file\n");
-    }
-    else printf("All tests passed\n");
-    printf("Tests complete\n");
+
+    //IMPORTANT: the gendebug makefile target has to be run to execute these tests.
+    //for this reason the test is commented out
+    //uncomment if you would like to test the output
+
+    // printf("Beginning tests. If no error messages then all tests passed\n");
+    // if (output_test()) {
+    //     printf("Error in output file\n");
+    // }
+    // else printf("All tests passed\n");
+    // printf("Tests complete\n");
 
     // Clean up
     sbuffer_free(&shared_buffer);
