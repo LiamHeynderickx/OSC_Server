@@ -209,12 +209,12 @@ int main(){
     //for this reason the test is commented out
     //uncomment if you would like to test the output
 
-    // printf("Beginning tests. If no error messages then all tests passed\n");
-    // if (output_test()) {
-    //     printf("Error in output file\n");
-    // }
-    // else printf("All tests passed\n");
-    // printf("Tests complete\n");
+    printf("Beginning tests. If no error messages then all tests passed\n");
+    if (output_test()) {
+        printf("Error in output file\n");
+    }
+    else printf("All tests passed\n");
+    printf("Tests complete\n");
 
     // Clean up
     sbuffer_free(&shared_buffer);
