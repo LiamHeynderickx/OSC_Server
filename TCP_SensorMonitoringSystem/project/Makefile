@@ -73,3 +73,8 @@ zip:
 #working
 buff : sbuffer.h sbuffer.c buffermain.c
 	gcc -g -Wall main.c sbuffer.c sbuffer.h -o buffermain.out
+
+
+#initial connmgr test
+conn : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h
+	gcc -g -Wall connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h -o connmgr.out

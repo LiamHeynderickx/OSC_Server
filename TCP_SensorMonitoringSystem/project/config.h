@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 
 /*
@@ -17,7 +19,7 @@
 #define ERROR_HANDLER(condition, ...)    do {\
     if (condition) {\
     printf("\nError: in %s - function %s at line %d: %s\n", __FILE__, __func__, __LINE__, __VA_ARGS__);\
-    exit(0);\
+    exit(EXIT_FAILURE);\
     }\
 } while(0)
 
