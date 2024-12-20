@@ -65,3 +65,11 @@ run : sensor_gateway sensor_node
 
 zip:
 	zip lab_final.zip main.c connmgr.c connmgr.h datamgr.c datamgr.h sbuffer.c sbuffer.h sensor_db.c sensor_db.h config.h lib/dplist.c lib/dplist.h lib/tcpsock.c lib/tcpsock.h Makefile
+
+
+# additional targets for intermediate steps
+
+#initial buffer test
+#working
+buff : sbuffer.h sbuffer.c main.c
+	gcc -g -Wall main.c sbuffer.c sbuffer.h -o main.out
