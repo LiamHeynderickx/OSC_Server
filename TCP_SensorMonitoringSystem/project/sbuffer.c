@@ -7,6 +7,7 @@
 #include "sbuffer.h"
 #include <pthread.h>
 #include <stdbool.h>
+#include "config.h"
 
 pthread_mutex_t write_lock_mtx;
 
@@ -30,12 +31,15 @@ struct sbuffer {
 
 //DONE
 int sbuffer_init(sbuffer_t **buffer) {
+    //initialize buff and mtx
     *buffer = malloc(sizeof(sbuffer_t));
-    if (*buffer == NULL) return SBUFFER_FAILURE;
+    ERROR_HANDLER(buffer == NULL, "Buffer init failed.");
     (*buffer)->head = NULL;
     (*buffer)->tail = NULL;
+
     pthread_mutex_init(&(*buffer)->mutex, NULL);
     pthread_cond_init(&(*buffer)->cond_var, NULL);
+
     return SBUFFER_SUCCESS;
 }
 

@@ -6,7 +6,7 @@ all: sensor_gateway sensor_node file_creator
 
 # When trying to compile one of the executables, first look for its .c files
 # Then check if the libraries are in the lib folder
-sensor_gateway : main.c connmgr.c datamgr.c sensor_db.c sbuffer.c lib/libdplist.so lib/libtcpsock.so
+sensor_gateway : buffermain.c connmgr.c datamgr.c sensor_db.c sbuffer.c lib/libdplist.so lib/libtcpsock.so
 	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_gateway *****$(NO_COLOR)"
 	gcc -c main.c      -Wall -std=c11 -Werror -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -o main.o      -fdiagnostics-color=auto
 	gcc -c connmgr.c   -Wall -std=c11 -Werror -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -o connmgr.o   -fdiagnostics-color=auto
@@ -71,5 +71,5 @@ zip:
 
 #initial buffer test
 #working
-buff : sbuffer.h sbuffer.c main.c
-	gcc -g -Wall main.c sbuffer.c sbuffer.h -o main.out
+buff : sbuffer.h sbuffer.c buffermain.c
+	gcc -g -Wall main.c sbuffer.c sbuffer.h -o buffermain.out

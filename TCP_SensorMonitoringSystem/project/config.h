@@ -17,7 +17,7 @@
 #define ERROR_HANDLER(condition, ...)    do {\
     if (condition) {\
     printf("\nError: in %s - function %s at line %d: %s\n", __FILE__, __func__, __LINE__, __VA_ARGS__);\
-    exit(EXIT_FAILURE);\
+    exit(0);\
     }\
 } while(0)
 
