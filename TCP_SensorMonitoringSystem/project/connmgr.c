@@ -15,6 +15,8 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "sbuffer.h"
+#include <string.h>
 
 
 pthread_mutex_t conn_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -51,8 +53,11 @@ void* client_handler(void* arg) {
         result = tcp_receive(client, (void*)&data.ts, &bytes);
         if (result != TCP_NO_ERROR) break;
 
+        //change to send data to buffer
         printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
                (long int)data.ts);
+        sbuffer_insert(&data);
+
     } while (result == TCP_NO_ERROR);
 
     if (result == TCP_CONNECTION_CLOSED)
@@ -107,7 +112,7 @@ void* excess_client_handler(void* arg) {
 
 
 
-void connmgr_listen(int PORT, int max_conn){
+void * connmgr_listen(int PORT, int max_conn){
 
     MAX_CONN = max_conn;
     tcpsock_t *server, *client;
@@ -176,4 +181,6 @@ void connmgr_listen(int PORT, int max_conn){
     pthread_kill(excess_thread, SIGUSR1);
     pthread_join(excess_thread, NULL);
     printf("Test server is shutting down\n");
+
+    return NULL;
 }

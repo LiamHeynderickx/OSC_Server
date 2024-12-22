@@ -78,3 +78,6 @@ buff : sbuffer.h sbuffer.c buffermain.c
 #initial connmgr test
 conn : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h
 	gcc -g -Wall connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h -o connmgr.out
+
+connWithBuff : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c
+	gcc -g -Wall connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c -o connBuff.out

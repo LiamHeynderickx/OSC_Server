@@ -12,8 +12,6 @@
 #define SENSOR_FILE_EMPTY "sensor_data_empty" //binary data file for testing only
 #define OUTPUT_FILE "sensor_data_out.csv"
 #define NUM_READERS 2
-
-
 sbuffer_t *shared_buffer;
 
 pthread_mutex_t file_write_mutex = PTHREAD_MUTEX_INITIALIZER;
