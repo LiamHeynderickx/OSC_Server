@@ -11,6 +11,8 @@
 
 pthread_mutex_t write_lock_mtx;
 
+sbuffer_t *buffer;
+
 /**
  * basic node for the buffer, these nodes are linked together to create the buffer
  */
@@ -30,42 +32,45 @@ struct sbuffer {
 };
 
 //DONE
-int sbuffer_init(sbuffer_t **buffer) {
+void sbuffer_init() {
     //initialize buff and mtx
-    *buffer = malloc(sizeof(sbuffer_t));
-    ERROR_HANDLER(buffer == NULL, "Buffer init failed.");
-    (*buffer)->head = NULL;
-    (*buffer)->tail = NULL;
+    pthread_mutex_init(&write_lock_mtx, NULL);
+    buffer = malloc(sizeof(sbuffer_t));
 
-    pthread_mutex_init(&(*buffer)->mutex, NULL);
-    pthread_cond_init(&(*buffer)->cond_var, NULL);
+    ERROR_HANDLER(buffer == NULL, "Buffer malloc failed.");
+    buffer->head = NULL;
+    buffer->tail = NULL;
 
-    return SBUFFER_SUCCESS;
+
+    pthread_mutex_init(&(buffer)->mutex, NULL);
+    pthread_cond_init(&(buffer)->cond_var, NULL);
 }
 
 
-int sbuffer_free(sbuffer_t **buffer) {
+void sbuffer_free() {
+    pthread_mutex_lock(&write_lock_mtx);
     sbuffer_node_t *dummy;
-    if ((buffer == NULL) || (*buffer == NULL)) {
-        return SBUFFER_FAILURE;
+    if (buffer == NULL) {
+        ERROR_HANDLER(buffer == NULL, "Buffer is NULL.");
     }
-    while ((*buffer)->head) {
-        dummy = (*buffer)->head;
-        (*buffer)->head = (*buffer)->head->next;
+
+    while (buffer->head) {
+        dummy = buffer->head;
+        buffer->head = buffer->head->next;
         free(dummy);
     }
 
+    pthread_mutex_unlock(&write_lock_mtx);
     //destroy sync variables
-    pthread_mutex_destroy(&(*buffer)->mutex);
-    pthread_cond_destroy(&(*buffer)->cond_var);
+    pthread_mutex_destroy(&buffer->mutex);
+    pthread_cond_destroy(&buffer->cond_var);
 
-    free(*buffer);
-    *buffer = NULL;
-    return SBUFFER_SUCCESS;
+    free(buffer);
+    buffer = NULL;
 }
 
 
-int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data) {
+int sbuffer_remove(sensor_data_t *data) {
     sbuffer_node_t *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
 
@@ -92,7 +97,7 @@ int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data) {
 }
 
 
-int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {
+int sbuffer_insert(sensor_data_t *data) {
     sbuffer_node_t *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
 
