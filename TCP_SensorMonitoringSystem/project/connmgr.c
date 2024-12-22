@@ -19,6 +19,7 @@
 
 pthread_mutex_t conn_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t conn_cond = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t socket_mutex = PTHREAD_MUTEX_INITIALIZER;
 int conn_counter = 0;         // Global connection counter
 int conn_terminations = 0;    // Counter for closed connections
 bool max_clients = false;
@@ -83,7 +84,9 @@ void* excess_client_handler(void* arg) {
     signal(SIGUSR1, signal_handler);
 
     while (true) {
+        pthread_mutex_lock(&socket_mutex);
         if (tcp_wait_for_connection(server, &client) == TCP_NO_ERROR) {
+            pthread_mutex_unlock(&socket_mutex);
             pthread_mutex_lock(&conn_mutex);
             if (conn_counter >= MAX_CONN) {
                 printf("Rejecting excess client connection\n");
