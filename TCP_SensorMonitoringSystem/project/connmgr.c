@@ -9,11 +9,16 @@
 #include "lib/tcpsock.h"
 #include <pthread.h>
 #include "connmgr.h"
+#include <stdbool.h>
+#include <unistd.h>
+
 
 pthread_mutex_t conn_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t conn_cond = PTHREAD_COND_INITIALIZER;
 int conn_counter = 0;         // Global connection counter
 int conn_terminations = 0;    // Counter for closed connections
+bool max_clients = false;
+int MAX_CONN = 0;
 
 void* client_handler(void* arg) {
     tcpsock_t* client = (tcpsock_t*)arg;
@@ -62,17 +67,45 @@ void* client_handler(void* arg) {
 }
 
 
-void connmgr_listen(int port, int max_conn){
-	tcpsock_t *server, *client;
+void* excess_client_handler(void* arg) {
+    tcpsock_t* server = (tcpsock_t*)arg;
+    tcpsock_t* client;
+
+    while (true) {
+        if (tcp_wait_for_connection(server, &client) == TCP_NO_ERROR) {
+            pthread_mutex_lock(&conn_mutex);
+            if (conn_counter >= MAX_CONN) {
+                printf("Rejecting excess client connection\n");
+                tcp_close(&client);
+            } else {
+                // Let the main thread handle valid clients
+                pthread_mutex_unlock(&conn_mutex);
+                usleep(1000);
+                continue;
+            }
+            pthread_mutex_unlock(&conn_mutex);
+        }
+        usleep(1000); // Prevent busy waiting
+    }
+
+    return NULL;
+}
+
+
+
+void connmgr_listen(int PORT, int max_conn){
+
+    MAX_CONN = max_conn;
+    tcpsock_t *server, *client;
     pthread_t thread_id;
 
     printf("Test server is started\n");
 
-    if (tcp_passive_open(&server, port) != TCP_NO_ERROR) exit(EXIT_FAILURE);
+    if (tcp_passive_open(&server, PORT) != TCP_NO_ERROR) exit(EXIT_FAILURE);
 
     pthread_mutex_lock(&conn_mutex);
 
-    while (conn_counter < max_conn) { //has to be this otherwise termination fails
+    while (conn_counter < MAX_CONN) { //has to be this otherwise termination fails
         pthread_mutex_unlock(&conn_mutex);
 
         // Wait for a client connection
@@ -84,7 +117,7 @@ void connmgr_listen(int port, int max_conn){
         printf("Incoming client connection\n");
 
         pthread_mutex_lock(&conn_mutex);
-        if (conn_counter < max_conn) {
+        if (conn_counter < MAX_CONN) {
             conn_counter++;
             pthread_mutex_unlock(&conn_mutex);
 
@@ -99,7 +132,7 @@ void connmgr_listen(int port, int max_conn){
 
             // Detach the thread
             pthread_detach(thread_id);
-        } else {
+        } else { //this else statement is never reached because while loop terminates before this happens
             // Ensure the mutex is unlocked before rejecting the client
             pthread_mutex_unlock(&conn_mutex);
 
@@ -112,8 +145,15 @@ void connmgr_listen(int port, int max_conn){
     }
 
 
+    //excess client handler
+    pthread_t excess_thread;
+    pthread_create(&excess_thread, NULL, excess_client_handler, (void*)server);
+    pthread_detach(excess_thread);
+
+
+
     // Wait until all client threads terminate
-    while (conn_terminations < max_conn) {
+    while (conn_terminations < MAX_CONN) {
         pthread_cond_wait(&conn_cond, &conn_mutex);
     }
     pthread_mutex_unlock(&conn_mutex);
