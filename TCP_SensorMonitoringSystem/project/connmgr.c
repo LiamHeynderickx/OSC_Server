@@ -84,7 +84,7 @@ void* excess_client_handler(void* arg) {
     signal(SIGUSR1, signal_handler);
 
     while (true) {
-        pthread_mutex_lock(&socket_mutex);
+        pthread_mutex_lock(&socket_mutex); //prevents mem leaks
         if (tcp_wait_for_connection(server, &client) == TCP_NO_ERROR) {
             pthread_mutex_unlock(&socket_mutex);
             pthread_mutex_lock(&conn_mutex);
