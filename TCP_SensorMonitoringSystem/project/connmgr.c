@@ -11,6 +11,10 @@
 #include "connmgr.h"
 #include <stdbool.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdio.h>
+#include <unistd.h>
 
 
 pthread_mutex_t conn_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -19,6 +23,11 @@ int conn_counter = 0;         // Global connection counter
 int conn_terminations = 0;    // Counter for closed connections
 bool max_clients = false;
 int MAX_CONN = 0;
+
+void signal_handler(int sig) {
+    printf("Thread received signal %d, exiting.\n", sig);
+    pthread_exit(NULL);  // Exit the thread cleanly
+}
 
 void* client_handler(void* arg) {
     tcpsock_t* client = (tcpsock_t*)arg;
@@ -70,6 +79,8 @@ void* client_handler(void* arg) {
 void* excess_client_handler(void* arg) {
     tcpsock_t* server = (tcpsock_t*)arg;
     tcpsock_t* client;
+
+    signal(SIGUSR1, signal_handler);
 
     while (true) {
         if (tcp_wait_for_connection(server, &client) == TCP_NO_ERROR) {
@@ -148,18 +159,18 @@ void connmgr_listen(int PORT, int max_conn){
     //excess client handler
     pthread_t excess_thread;
     pthread_create(&excess_thread, NULL, excess_client_handler, (void*)server);
-    pthread_detach(excess_thread);
-
-
 
     // Wait until all client threads terminate
     while (conn_terminations < MAX_CONN) {
         pthread_cond_wait(&conn_cond, &conn_mutex);
     }
     pthread_mutex_unlock(&conn_mutex);
-
     if (tcp_close(&server) != TCP_NO_ERROR) exit(EXIT_FAILURE);
     pthread_mutex_destroy(&conn_mutex);
     pthread_cond_destroy(&conn_cond);
+//    pthread_cancel(excess_thread);
+    printf("Sending SIGUSR1 to the thread.\n");
+    pthread_kill(excess_thread, SIGUSR1);
+    pthread_join(excess_thread, NULL);
     printf("Test server is shutting down\n");
 }
