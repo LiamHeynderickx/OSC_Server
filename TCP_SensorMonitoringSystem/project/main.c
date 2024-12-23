@@ -58,8 +58,26 @@ void *reader_thread(void *arg) { //*arg parameter required for the pthread_creat
 
 int main(int argc, char *argv[]) {
 
-  	int port = 12345;
-    int max_conn = 3;
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <port> <max_conn>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    // Parse port
+    int port = atoi(argv[1]);
+    if (port <= 0 || port > 65535) {
+        fprintf(stderr, "Invalid port number: %s. Must be between 1 and 65535.\n", argv[1]);
+        return EXIT_FAILURE;
+    }
+
+    // Parse max_conn
+    int max_conn = atoi(argv[2]);
+    if (max_conn <= 0) {
+        fprintf(stderr, "Invalid max_conn: %s. Must be a positive integer.\n", argv[2]);
+        return EXIT_FAILURE;
+    }
+
+    printf("Process started on Port: %d, Max Connections: %d\n", port, max_conn);
 
     pthread_t writer, reader1, reader2;
 
@@ -74,7 +92,6 @@ int main(int argc, char *argv[]) {
     args->port = port;
     args->max_conn = max_conn;
 
-   	printf("port = %d and max_conn = %d\n", port, max_conn);
 
     // Create the thread
     if (pthread_create(&writer, NULL, connmgr_listen, (void*)args) != 0) {
@@ -93,19 +110,19 @@ int main(int argc, char *argv[]) {
     pthread_create(&reader1, NULL, reader_thread, (void*)file_out);
     pthread_create(&reader2, NULL, reader_thread, (void*)file_out);
 
-    printf("waiting for threads to join\n");
+//    printf("waiting for threads to join\n");
 
     pthread_join(writer, NULL);
-    printf("w\n");
+//    printf("w\n");
     pthread_join(reader1, NULL);
-    printf("r1\n");
+//    printf("r1\n");
     pthread_join(reader2, NULL);
-    printf("r2\n");
+//    printf("r2\n");
 
     fclose(file_out);
-    printf("f\n");
+//    printf("f\n");
     sbuffer_free(); // Clean up the shared buffer
-    printf("b\n");
+//    printf("b\n");
 
 //    free(args); //already freed in connmgr
 

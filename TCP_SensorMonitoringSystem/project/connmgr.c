@@ -85,41 +85,48 @@ void* client_handler(void* arg) {
 }
 
 
+
+bool stop_excess_handler = false;
+
 void* excess_client_handler(void* arg) {
     tcpsock_t* server = (tcpsock_t*)arg;
     tcpsock_t* client;
 
     signal(SIGUSR1, signal_handler);
 
-    while (true) {
-        pthread_mutex_lock(&socket_mutex); //prevents mem leaks
-        if (tcp_wait_for_connection(server, &client) == TCP_NO_ERROR) {
-            pthread_mutex_unlock(&socket_mutex);
+    while (!stop_excess_handler) { // Check the stop signal
+        pthread_mutex_lock(&socket_mutex);
+        int result = tcp_wait_for_connection(server, &client);
+        pthread_mutex_unlock(&socket_mutex);
+
+        if (result == TCP_NO_ERROR) {
             pthread_mutex_lock(&conn_mutex);
             if (conn_counter >= MAX_CONN) {
                 printf("Rejecting excess client connection\n");
-                tcp_close(&client);
-            } else {
-                // Let the main thread handle valid clients
-                pthread_mutex_unlock(&conn_mutex);
-                usleep(1000);
-                continue;
+                tcp_close(&client);  // Close the client socket if rejected
+                printf("Closed excess client socket\n");
             }
             pthread_mutex_unlock(&conn_mutex);
+        } else {
+            // Error occurred; ensure client is not left dangling
+            if (client) {
+                tcp_close(&client);  // Clean up socket in case of errors
+                printf("Closed socket after error\n");
+            }
         }
         usleep(1000); // Prevent busy waiting
     }
 
+    printf("Excess client handler exiting.\n");
     return NULL;
 }
-
 
 
 void * connmgr_listen(void* arg){
 
   	connmgr_args_t* args = (connmgr_args_t*)arg; // Cast to connmgr_args_t*
     int PORT = args->port;
-    int MAX_CONN = args->max_conn;
+    MAX_CONN = args->max_conn;
 
     tcpsock_t *server, *client;
     pthread_t thread_id;
@@ -183,6 +190,9 @@ void * connmgr_listen(void* arg){
     pthread_mutex_destroy(&conn_mutex);
     pthread_cond_destroy(&conn_cond);
 //    pthread_cancel(excess_thread);
+    // Signal the excess client handler to stop
+    stop_excess_handler = true;
+//    usleep(1000);
     printf("Sending SIGUSR1 to the thread.\n");
     pthread_kill(excess_thread, SIGUSR1);
     pthread_join(excess_thread, NULL);
