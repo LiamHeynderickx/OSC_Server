@@ -24,6 +24,11 @@
 } while(0)
 
 
+typedef struct {
+    int port;
+    int max_conn;
+} connmgr_args_t;
+
 typedef uint16_t sensor_id_t;
 typedef double sensor_value_t;
 typedef time_t sensor_ts_t;

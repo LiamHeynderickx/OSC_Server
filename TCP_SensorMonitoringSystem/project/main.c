@@ -48,7 +48,7 @@ void *reader_thread(void *arg) { //*arg parameter required for the pthread_creat
         fflush(file_out);
         pthread_mutex_unlock(&file_write_mutex);
         // printf("%hu,%.4f,%ld\n", data.id, data.value, data.ts);//use for testing
-        usleep(25000); // Sleep for 25ms
+        usleep(2500); // Sleep for 25ms
     }
 
     //do not close file here leads to: double free or corruption (!prev)
@@ -58,14 +58,30 @@ void *reader_thread(void *arg) { //*arg parameter required for the pthread_creat
 
 int main(int argc, char *argv[]) {
 
-  	//ERROR_HANDLER(argc != 3, "Wrong number of arguments.");
-
-    int port = 12345;
+  	int port = 12345;
     int max_conn = 3;
 
-    // Initialize shared buffer
-    printf("Buffer operation initializing\n");
+    pthread_t writer, reader1, reader2;
+
     sbuffer_init();
+
+    // Allocate and initialize the structure
+    connmgr_args_t* args = malloc(sizeof(connmgr_args_t));
+    if (args == NULL) {
+        perror("Failed to allocate memory for connmgr_args_t");
+        return EXIT_FAILURE;
+    }
+    args->port = port;
+    args->max_conn = max_conn;
+
+   	printf("port = %d and max_conn = %d\n", port, max_conn);
+
+    // Create the thread
+    if (pthread_create(&writer, NULL, connmgr_listen, (void*)args) != 0) {
+        perror("Failed to create connmgr_listen thread");
+        free(args); // Clean up if thread creation fails
+        return EXIT_FAILURE;
+    }
 
     FILE *file_out = fopen(OUTPUT_FILE, "w"); // Open shared file stream
     if (!file_out) {
@@ -73,17 +89,23 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    pthread_t writer, reader1, reader2;
 
-    pthread_create(&writer, NULL,connmgr_listen(port,max_conn), (void *) &port);
-    pthread_create(&reader1, NULL, reader_thread, (void *)file_out);
-    pthread_create(&reader2, NULL, reader_thread, (void *)file_out);
+    pthread_create(&reader1, NULL, reader_thread, (void*)file_out);
+    pthread_create(&reader2, NULL, reader_thread, (void*)file_out);
+
+    printf("waiting for threads to join\n");
 
     pthread_join(writer, NULL);
+    printf("w\n");
     pthread_join(reader1, NULL);
+    printf("r1\n");
     pthread_join(reader2, NULL);
+    printf("r2\n");
 
     fclose(file_out);
+    printf("f\n");
+    sbuffer_free(); // Clean up the shared buffer
+    printf("b");
 
     return 0;
 }

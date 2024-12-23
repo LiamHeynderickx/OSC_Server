@@ -32,6 +32,9 @@ void signal_handler(int sig) {
     pthread_exit(NULL);  // Exit the thread cleanly
 }
 
+
+
+
 void* client_handler(void* arg) {
     tcpsock_t* client = (tcpsock_t*)arg;
     sensor_data_t data;
@@ -112,9 +115,12 @@ void* excess_client_handler(void* arg) {
 
 
 
-void * connmgr_listen(int PORT, int max_conn){
+void * connmgr_listen(void* arg){
 
-    MAX_CONN = max_conn;
+  	connmgr_args_t* args = (connmgr_args_t*)arg; // Cast to connmgr_args_t*
+    int PORT = args->port;
+    int MAX_CONN = args->max_conn;
+
     tcpsock_t *server, *client;
     pthread_t thread_id;
 

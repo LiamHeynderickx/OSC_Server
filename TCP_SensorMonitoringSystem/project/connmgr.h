@@ -5,6 +5,6 @@
 #include "config.h"
 
 // Initializes the server and handles connections
-void * connmgr_listen(int port, int max_conn);
+void * connmgr_listen(void* arg);
 
 #endif // CONNMGR_H
