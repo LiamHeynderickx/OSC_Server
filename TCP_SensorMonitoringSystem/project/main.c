@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
     fclose(file_out);
     printf("f\n");
     sbuffer_free(); // Clean up the shared buffer
-    printf("b");
+    printf("b\n");
 
     return 0;
 }
