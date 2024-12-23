@@ -60,6 +60,9 @@ void sbuffer_free() {
         free(dummy);
     }
 
+    buffer->head = NULL;  // Ensure head and tail are null
+    buffer->tail = NULL;
+
     pthread_mutex_unlock(&write_lock_mtx);
     //destroy sync variables
     pthread_mutex_destroy(&buffer->mutex);

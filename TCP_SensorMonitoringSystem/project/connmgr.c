@@ -188,11 +188,8 @@ void * connmgr_listen(void* arg){
     pthread_join(excess_thread, NULL);
     printf("Test server is shutting down\n");
     //insert eof
-    sensor_data_t *data = malloc(sizeof(sensor_data_t));
-    memset(data, 0, sizeof(sensor_data_t));
-    sbuffer_insert(data);
-    free(data);
-
-
+    sensor_data_t data = {0};  // Create an end-of-stream marker on the stack
+	sbuffer_insert(&data);
+    free(args);
     return NULL;
 }

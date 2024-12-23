@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     sbuffer_init();
 
     // Allocate and initialize the structure
-    connmgr_args_t* args = malloc(sizeof(connmgr_args_t));
+    connmgr_args_t* args = malloc(sizeof(connmgr_args_t)); //memory leak on this line
     if (args == NULL) {
         perror("Failed to allocate memory for connmgr_args_t");
         return EXIT_FAILURE;
@@ -106,6 +106,8 @@ int main(int argc, char *argv[]) {
     printf("f\n");
     sbuffer_free(); // Clean up the shared buffer
     printf("b\n");
+
+//    free(args); //already freed in connmgr
 
     return 0;
 }
