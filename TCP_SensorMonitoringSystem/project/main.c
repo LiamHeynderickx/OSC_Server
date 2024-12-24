@@ -59,6 +59,9 @@
 
 int main(int argc, char *argv[]) {
 
+    sbuffer_init();
+    create_log_process();
+
     if (argc != 3) {
         fprintf(stderr, "Usage: %s <port> <max_conn>\n", argv[0]);
         return EXIT_FAILURE;
@@ -82,9 +85,6 @@ int main(int argc, char *argv[]) {
     write_to_log_process("Port and Connections defined\n");
 
     pthread_t writer, reader;
-
-    sbuffer_init();
-    create_log_process();
 
     // Allocate and initialize the structure
     connmgr_args_t* args = malloc(sizeof(connmgr_args_t)); //memory leak on this line (fixed)
