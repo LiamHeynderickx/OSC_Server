@@ -74,7 +74,6 @@ void create_log_process() {
 
         char buffer[BUFFER_SIZE];
 
-
         while (1) { //continuous loop keeps log child open
             ssize_t bytes_read = read(pipe_fd[0], buffer, BUFFER_SIZE - 1);
             if (bytes_read <= 0) break;
@@ -91,7 +90,6 @@ void create_log_process() {
             fflush(log_file);
         }
 
-
         fclose(log_file);
         close(pipe_fd[READ_END]);
         exit(0);
@@ -107,6 +105,7 @@ void end_log_process() {
 //    }
 
     write_to_log_process("Data file closed\n");
+    write_to_log_process("ending log process\n");
 
     usleep(100000); // Wait for 100ms to ensure logger finishes before closing
 
@@ -135,7 +134,7 @@ void * open_db() { //hosts sbuffer reader process
 //        return NULL;
 //    }
 
-    FILE *file_out = fopen(SENSOR_DB_FILENAME, APPEND_MODE ? "a" : "w");
+    FILE *file_out = fopen(SENSOR_DB_FILENAME, WRITE_MODE ? "a" : "w"); //TODO: change to append mode, write mode testing only
     if (file_out) {
         write_to_log_process("Data file opened.\n");
     } else {
@@ -216,5 +215,5 @@ void close_db(FILE *f) {
 //        return -1;
 //    }
 
-    printf("db successfully closed");
+    write_to_log_process("DB Closed Successfully\n");
 }

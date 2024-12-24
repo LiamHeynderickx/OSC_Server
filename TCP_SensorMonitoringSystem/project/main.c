@@ -79,6 +79,7 @@ int main(int argc, char *argv[]) {
     }
 
     printf("Process started on Port: %d, Max Connections: %d\n", port, max_conn);
+    write_to_log_process("Port and Connections defined\n");
 
     pthread_t writer, reader;
 
@@ -118,14 +119,14 @@ int main(int argc, char *argv[]) {
 
 
 //    printf("waiting for threads to join\n");
+    write_to_log_process("Waiting for threads to join\n");
 
     pthread_join(writer, NULL);
 //    printf("w\n");
     pthread_join(reader, NULL);
 //    printf("r1\n");
 
-
-
+    write_to_log_process("Threads joined\n");
 
     fclose(file_out);
     sbuffer_free(); // Clean up the shared buffer

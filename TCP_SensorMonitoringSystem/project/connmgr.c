@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include "sbuffer.h"
 #include <string.h>
+#include "sensor_db.h"
 
 
 pthread_mutex_t conn_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -29,6 +30,7 @@ int MAX_CONN = 0;
 
 void signal_handler(int sig) {
     printf("Thread received signal %d, exiting.\n", sig);
+    write_to_log_process("Thred recieved exit signal\n");
     pthread_exit(NULL);  // Exit the thread cleanly
 }
 
@@ -63,10 +65,14 @@ void* client_handler(void* arg) {
 
     } while (result == TCP_NO_ERROR);
 
-    if (result == TCP_CONNECTION_CLOSED)
+    if (result == TCP_CONNECTION_CLOSED){
         printf("Peer has closed connection\n");
-    else
+        write_to_log_process("Peer has closed connection\n");
+    }
+    else{
         printf("Error occurred on connection to peer\n");
+        write_to_log_process("Peer connection error\n");
+    }
 
     // Close client socket
     tcp_close(&client);
@@ -88,7 +94,7 @@ void* client_handler(void* arg) {
 
 bool stop_excess_handler = false;
 
-void* excess_client_handler(void* arg) {
+void* excess_client_handler(void* arg) { //this thread is blocking so must be killed
     tcpsock_t* server = (tcpsock_t*)arg;
     tcpsock_t* client;
 
@@ -103,8 +109,10 @@ void* excess_client_handler(void* arg) {
             pthread_mutex_lock(&conn_mutex);
             if (conn_counter >= MAX_CONN) {
                 printf("Rejecting excess client connection\n");
+                write_to_log_process("Rejecting excess client connection\n");
                 tcp_close(&client);  // Close the client socket if rejected
                 printf("Closed excess client socket\n");
+                write_to_log_process("Closed excess client socket\n");
             }
             pthread_mutex_unlock(&conn_mutex);
         } else {
@@ -112,12 +120,14 @@ void* excess_client_handler(void* arg) {
             if (client) {
                 tcp_close(&client);  // Clean up socket in case of errors
                 printf("Closed socket after error\n");
+                write_to_log_process("Socket terminated following errors\n");
             }
         }
         usleep(1000); // Prevent busy waiting
     }
 
     printf("Excess client handler exiting.\n");
+    write_to_log_process("Excess client handler terminating\n");
     return NULL;
 }
 
@@ -132,6 +142,7 @@ void * connmgr_listen(void* arg){
     pthread_t thread_id;
 
     printf("Test server is started\n");
+    write_to_log_process("Test server is started\n");
 
     if (tcp_passive_open(&server, PORT) != TCP_NO_ERROR) exit(EXIT_FAILURE);
 
@@ -143,10 +154,12 @@ void * connmgr_listen(void* arg){
         // Wait for a client connection
         if (tcp_wait_for_connection(server, &client) != TCP_NO_ERROR) {
             perror("Failed to wait for connection");
+            write_to_log_process("Failed to wait for connection\n");
             continue;
         }
 
         printf("Incoming client connection\n");
+        write_to_log_process("Incomming client connection\n");
 
         pthread_mutex_lock(&conn_mutex);
         if (conn_counter < MAX_CONN) {
@@ -154,10 +167,12 @@ void * connmgr_listen(void* arg){
             pthread_mutex_unlock(&conn_mutex);
 
             printf("Incoming client connection succeeded\n");
+            write_to_log_process("Incomming client connection succeeded\n");
 
             // Create a thread for the client
             if (pthread_create(&thread_id, NULL, client_handler, (void*)client) != 0) {
                 perror("Failed to create thread");
+                write_to_log_process("failed to create thread\n");
                 tcp_close(&client);
                 continue;
             }
@@ -197,6 +212,7 @@ void * connmgr_listen(void* arg){
     pthread_kill(excess_thread, SIGUSR1);
     pthread_join(excess_thread, NULL);
     printf("Test server is shutting down\n");
+    write_to_log_process("Test server is shutting down\n");
     //insert eof
     sensor_data_t data = {0};  // Create an end-of-stream marker on the stack
 	sbuffer_insert(&data);
