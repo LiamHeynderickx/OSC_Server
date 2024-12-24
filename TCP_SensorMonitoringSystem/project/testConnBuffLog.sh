@@ -2,7 +2,7 @@ make ConnLogBuff
 port=5678
 clients=3
 echo -e "starting gateway "
-valgrind ./ConnBuffLog.out $port $clients & #valgrind --leak-check=full
+valgrind valgrind --leak-check=full ./ConnBuffLog.out $port $clients & #valgrind --leak-check=full
 sleep 3
 echo -e 'starting 3 sensor nodes - from shell'
 ./sensor_node 1 1 127.0.0.1 $port &
@@ -24,6 +24,6 @@ sleep 2
 #terminate
 killall sensor_node
 sleep 5
-killall connBuff.out
+killall ConnLogBuff.out
 
 #after running many times valgrind doesnt indicate mem leaks
