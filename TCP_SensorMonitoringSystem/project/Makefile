@@ -6,7 +6,7 @@ all: sensor_gateway sensor_node file_creator
 
 # When trying to compile one of the executables, first look for its .c files
 # Then check if the libraries are in the lib folder
-sensor_gateway : buffermain.c connmgr.c datamgr.c sensor_db.c sbuffer.c lib/libdplist.so lib/libtcpsock.so
+sensor_gateway : main.c connmgr.c datamgr.c sensor_db.c sbuffer.c lib/libdplist.so lib/libtcpsock.so
 	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_gateway *****$(NO_COLOR)"
 	gcc -c main.c      -Wall -std=c11 -Werror -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -o main.o      -fdiagnostics-color=auto
 	gcc -c connmgr.c   -Wall -std=c11 -Werror -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -o connmgr.o   -fdiagnostics-color=auto
@@ -76,8 +76,11 @@ buff : sbuffer.h sbuffer.c buffermain.c
 
 
 #initial connmgr test
-conn : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h
+conn : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h #depreciated - dont use
 	gcc -g -Wall connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h -o connmgr.out
 
-connWithBuff : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c
+connWithBuff : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c #depreciated - dont use
 	gcc -g -Wall connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c -o connBuff.out
+
+ConnLogBuff : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c sensor_db.c sensor_db.h
+	gcc -g -Wall connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c sensor_db.c sensor_db.h -o ConnBuffLog.out
