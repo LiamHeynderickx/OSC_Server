@@ -10,7 +10,7 @@
 
 #define SBUFFER_FAILURE -1
 #define SBUFFER_SUCCESS 0
-#define SBUFFER_NO_DATA 1
+#define SBUFFER_EMPTY 1
 
 typedef struct sbuffer sbuffer_t;
 
@@ -20,11 +20,11 @@ typedef struct sbuffer sbuffer_t;
 typedef struct sbuffer_node {
  struct sbuffer_node *next;
  sensor_data_t data;
-} sbuffer_node_t;
+} sbuffer_node_struct;
 
 struct sbuffer {
- sbuffer_node_t *head;
- sbuffer_node_t *tail;
+ sbuffer_node_struct *head;
+ sbuffer_node_struct *tail;
  pthread_mutex_t mutex;
  pthread_cond_t cond_var;
 };
@@ -52,7 +52,7 @@ void sbuffer_free();
  */
 int sbuffer_remove(sensor_data_t *data);
 
-int sbuffer_read(sbuffer_node_t **node, sensor_data_t *data);
+int sbuffer_read(sbuffer_node_struct **node, sensor_data_t *data);
 
 /**
  * Inserts the sensor data in 'data' at the end of 'buffer' (at the 'tail')

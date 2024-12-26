@@ -59,8 +59,8 @@ void* client_handler(void* arg) {
         if (result != TCP_NO_ERROR) break;
 
         //change to send data to buffer
-        printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
-               (long int)data.ts);
+//        printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
+//               (long int)data.ts);
         sbuffer_insert(&data);
 
     } while (result == TCP_NO_ERROR);

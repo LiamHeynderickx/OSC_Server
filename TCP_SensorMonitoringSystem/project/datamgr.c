@@ -126,6 +126,8 @@ void datamgr_free() {
     }
 
     dpl_free(&data_list, true);
+//    data_list = NULL;  // Prevent dangling pointer
+    ERROR_HANDLER(data_list != NULL, "Error freeing list");
 
 }
 
@@ -164,16 +166,20 @@ void * data_manager_init(){
         dpl_insert_at_index(data_list, e, 0, false); //puts new element at front of list
     }
 
-    sbuffer_node_t *node = NULL; //This makes the datamgr remember its last position.
+    fclose(fp_sensor_map);
+
+    //now read data from buffer
+
+    sbuffer_node_struct *node = NULL; //This makes the datamgr remember its last position.
 //    FILE *file_out_dmgr = fopen("data_mgr_read.csv", false ? "a" : "w");
     sensor_data_t record;
 
-    while (keep_running) { // waits for element
+    while (1) { // waits for element
 
         // Get all the data in the buffer, if no data is available, sleep for 1 us waiting for new data to come in.
         do {
             int res = sbuffer_read(&node, &record);
-            if (res != SBUFFER_NO_DATA) break;
+            if (res != SBUFFER_EMPTY) break;
             usleep(1); // Requires GNU_SOURCE
             if (!keep_running) return NULL; // Exit gracefully
         } while (1);
@@ -203,9 +209,9 @@ void * data_manager_init(){
 
             tmp->running_avg_value = running_avg;
 
-            // if (tmp->sensor_id == 132) { //testing
-            //     printf("Sensor id %d, Running Avg: %.2f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified);
-            // }
+
+            printf("Sensor id %d, Running Avg: %.2f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified);
+
 
             //check if between min and max set temps
             if (running_avg > SET_MAX_TEMP) {
@@ -228,7 +234,8 @@ void * data_manager_init(){
     }
 
     printf("\n\n\n\n\n\n");
-    datamgr_print_sensors();
+    datamgr_print_sensors(); //debug line
+    datamgr_free();
     return NULL;
 }
 

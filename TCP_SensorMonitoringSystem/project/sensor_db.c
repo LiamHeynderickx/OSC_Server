@@ -142,9 +142,15 @@ void * open_db() { //hosts sbuffer reader process
     }
 
     sensor_data_t data;
+    sbuffer_node_struct *node = NULL;
 
     while (1) { //process that reads from buffer
-        sbuffer_remove(&data);
+        int read_ret;
+        do {
+            read_ret = sbuffer_read(&node, &data);
+            usleep(10);
+        } while (read_ret == SBUFFER_EMPTY);
+
         if (data.id == 0) { // End-of-stream marker
             static int eos_count = 0; // Track how many threads have terminated
             eos_count++;

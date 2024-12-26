@@ -2,7 +2,7 @@ make ConnLogBuff
 port=5678
 clients=3
 echo -e "starting gateway "
-valgrind valgrind --leak-check=full ./ConnBuffLog.out $port $clients & #valgrind --leak-check=full
+valgrind --leak-check=full ./ConnBuffLog.out $port $clients & #valgrind --leak-check=full
 sleep 3
 echo -e 'starting 3 sensor nodes - from shell'
 ./sensor_node 1 1 127.0.0.1 $port &

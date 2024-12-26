@@ -16,9 +16,6 @@
 #include "datamgr.h"
 #include "sensor_db.h"
 
-#define OUTPUT_FILE "sensor_data_out.csv"
-#define NUM_READERS 2
-
 //pthread_mutex_t file_write_mutex = PTHREAD_MUTEX_INITIALIZER; //initialized in sensor_db.c
 
 //reads data from the buffer and inserts it to file
@@ -103,12 +100,6 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    FILE *file_out = fopen(OUTPUT_FILE, "w"); // Open shared file stream
-    if (!file_out) {
-        perror("Failed to open output file");
-        return EXIT_FAILURE;
-    }
-
 
 //    pthread_create(&reader1, NULL, reader_thread, (void*)file_out); //replace with sensor_db
 //    pthread_create(&reader2, NULL, reader_thread, (void*)file_out);
@@ -116,7 +107,7 @@ int main(int argc, char *argv[]) {
 
     pthread_create(&sensor_db, NULL, open_db, NULL);
 
-    pthread_create(&datamgr, NULL, data_manager_init(), NULL);
+    pthread_create(&datamgr, NULL, data_manager_init, NULL);
 
 
 //    printf("waiting for threads to join\n");
@@ -130,7 +121,6 @@ int main(int argc, char *argv[]) {
 
     write_to_log_process("Threads joined\n");
 
-    fclose(file_out);
     sbuffer_free(); // Clean up the shared buffer
     end_log_process();
 

@@ -31,34 +31,46 @@ void sbuffer_init() {
 }
 
 
+//void sbuffer_free() {
+//    pthread_mutex_lock(&write_lock_mtx);
+//    sbuffer_node_struct *dummy;
+//    if (buffer == NULL) {
+//        ERROR_HANDLER(buffer == NULL, "Buffer is NULL.");
+//    }
+//
+//    while (buffer->head) {
+//        dummy = buffer->head;
+//        buffer->head = buffer->head->next;
+//        free(dummy);
+//    }
+//
+//    buffer->head = NULL;  // Ensure head and tail are null
+//    buffer->tail = NULL;
+//
+//    pthread_mutex_unlock(&write_lock_mtx);
+//    //destroy sync variables
+//    pthread_mutex_destroy(&buffer->mutex);
+//    pthread_cond_destroy(&buffer->cond_var);
+//
+//    free(buffer);
+//    buffer = NULL;
+//}
+
 void sbuffer_free() {
-    pthread_mutex_lock(&write_lock_mtx);
-    sbuffer_node_t *dummy;
-    if (buffer == NULL) {
-        ERROR_HANDLER(buffer == NULL, "Buffer is NULL.");
+    sbuffer_node_struct *current = buffer->head;
+    while (current) {
+        sbuffer_node_struct *next = current->next;
+        free(current);
+        current = next;
     }
-
-    while (buffer->head) {
-        dummy = buffer->head;
-        buffer->head = buffer->head->next;
-        free(dummy);
-    }
-
-    buffer->head = NULL;  // Ensure head and tail are null
-    buffer->tail = NULL;
-
-    pthread_mutex_unlock(&write_lock_mtx);
-    //destroy sync variables
-    pthread_mutex_destroy(&buffer->mutex);
-    pthread_cond_destroy(&buffer->cond_var);
-
     free(buffer);
-    buffer = NULL;
 }
 
 
-int sbuffer_remove(sensor_data_t *data) {
-    sbuffer_node_t *dummy;
+
+
+int sbuffer_remove(sensor_data_t *data) { //not used
+    sbuffer_node_struct *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
 
     pthread_mutex_lock(&buffer->mutex);
@@ -84,36 +96,28 @@ int sbuffer_remove(sensor_data_t *data) {
 }
 
 
-int sbuffer_read(sbuffer_node_t **node, sensor_data_t *data) {
-    // No mention is ever made of a bounded buffer, I'll just assume an infinite amount of RAM then :P
-    // No deleting reads = no mutex = no headaches.
-    ERROR_HANDLER(buffer == NULL, "Buffer is NULL.");
-    if (buffer->head == NULL) return SBUFFER_NO_DATA; //List is empty
-
+int sbuffer_read(sbuffer_node_struct **node, sensor_data_t *data) {
+    ERROR_HANDLER(buffer == NULL, "Buffer not initialized");
+    if (buffer->head == NULL) return SBUFFER_EMPTY;
     if (*node == NULL) {
-        // No node selected, start from head.
         *data = buffer->head->data;
         *node = buffer->head;
         return SBUFFER_SUCCESS;
     } else if ((*node)->next != NULL) {
-        // Node selected, start from there.
         *data = (*node)->next->data;
         *node = (*node)->next;
         return SBUFFER_SUCCESS;
     } else {
-        // List has no data.
-        return SBUFFER_NO_DATA;
+        return SBUFFER_EMPTY;
     }
 }
 
 
-
-
 int sbuffer_insert(sensor_data_t *data) {
-    sbuffer_node_t *dummy;
+    sbuffer_node_struct *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
 
-    dummy = malloc(sizeof(sbuffer_node_t));
+    dummy = malloc(sizeof(sbuffer_node_struct));
 
     if (dummy == NULL) return SBUFFER_FAILURE;
     dummy->data = *data;
