@@ -59,7 +59,7 @@ static void datamgr_print_sensors() { // for testing
         return;
     }
 
-    for (int i = 0; i < dpl_size(data_list); i++) {
+    for (int i = 0; i < dpl_size(data_list); i++) { //prints from data list
         list_element *e = (list_element *)dpl_get_element_at_index(data_list, i);
         if (e) {
             // Calculate running average

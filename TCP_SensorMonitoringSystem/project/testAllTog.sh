@@ -24,4 +24,4 @@ sleep 2
 #terminate
 killall sensor_node
 sleep 10
-#killall allTog.out
+killall allTog.out
