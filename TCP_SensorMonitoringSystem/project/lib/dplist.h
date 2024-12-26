@@ -121,4 +121,3 @@ int dpl_get_index_of_element(dplist_t *list, void *element);
 void *dpl_get_element_at_reference(dplist_t *list, dplist_node_t *reference);
 
 #endif  // _DPLIST_H_
-
