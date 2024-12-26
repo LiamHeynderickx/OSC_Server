@@ -127,7 +127,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data) {
 
         // printf("Size of list_element: %zu bytes\n", sizeof(list_element));
 
-        list_element *e = (list_element *)malloc(sizeof(list_element)); //////////////error on this line
+        list_element *e = (list_element *)malloc(sizeof(list_element));
 
         if (!e) {
             fprintf(stderr, "Error: Memory allocation for list_element failed.\n");
@@ -175,18 +175,20 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data) {
             //calculate running avg:
             sensor_value_t running_avg = get_running_avg(tmp->window_running_avg);
 
-            if (tmp->sensor_id == 132) {
-                printf("Sensor id %d, Running Avg: %.2f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified);
-            }
+            tmp->running_avg_value = running_avg;
+
+            // if (tmp->sensor_id == 132) { //testing
+            //     printf("Sensor id %d, Running Avg: %.2f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified);
+            // }
 
             //check if between min and max set temps
             if (running_avg > SET_MAX_TEMP) {
                 //log if temp too high here
-                // printf("Sensor id %d is too hot: %.2f Celsius, time: %ld \n", tmp->sensor_id, tmp->running_avg_value, tmp->last_modified);
+                printf("Sensor id %d is too hot: %.4f Celsius, time: %ld \n", tmp->sensor_id, tmp->running_avg_value, tmp->last_modified);
             }
             else if (running_avg < SET_MIN_TEMP) {
                 //log if temp too low here
-                // printf("Sensor id %d is too cold: %.2f Celsius\n", tmp->sensor_id, tmp->running_avg_value);
+                printf("Sensor id %d is too cold: %.4f Celsius\n", tmp->sensor_id, tmp->running_avg_value);
             }
             else {
                 //do nothing
