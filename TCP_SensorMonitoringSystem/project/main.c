@@ -13,7 +13,7 @@
 
 #include "connmgr.h"
 #include "sbuffer.h"
-//#include "datamgr.h"
+#include "datamgr.h"
 #include "sensor_db.h"
 
 #define OUTPUT_FILE "sensor_data_out.csv"
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     printf("Process started on Port: %d, Max Connections: %d\n", port, max_conn);
     write_to_log_process("Port and Connections defined\n");
 
-    pthread_t writer, reader;
+    pthread_t connmgr, sensor_db, datamgr;
 
     // Allocate and initialize the structure
     connmgr_args_t* args = malloc(sizeof(connmgr_args_t)); //memory leak on this line (fixed)
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
 
 
     // Create the thread
-    if (pthread_create(&writer, NULL, connmgr_listen, (void*)args) != 0) {
+    if (pthread_create(&connmgr, NULL, connmgr_listen, (void*)args) != 0) {
         perror("Failed to create connmgr_listen thread");
         free(args); // Clean up if thread creation fails
         return EXIT_FAILURE;
@@ -114,17 +114,19 @@ int main(int argc, char *argv[]) {
 //    pthread_create(&reader2, NULL, reader_thread, (void*)file_out);
 
 
-    pthread_create(&reader, NULL, open_db, NULL);
+    pthread_create(&sensor_db, NULL, open_db, NULL);
 
+    pthread_create(&datamgr, NULL, data_manager_init(), NULL);
 
 
 //    printf("waiting for threads to join\n");
     write_to_log_process("Waiting for threads to join\n");
 
-    pthread_join(writer, NULL);
+    pthread_join(connmgr, NULL);
 //    printf("w\n");
-    pthread_join(reader, NULL);
+    pthread_join(sensor_db, NULL);
 //    printf("r1\n");
+    pthread_join(datamgr, NULL);
 
     write_to_log_process("Threads joined\n");
 

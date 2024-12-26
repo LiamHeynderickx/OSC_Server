@@ -13,23 +13,7 @@ pthread_mutex_t write_lock_mtx;
 
 sbuffer_t *buffer;
 
-/**
- * basic node for the buffer, these nodes are linked together to create the buffer
- */
-typedef struct sbuffer_node {
-    struct sbuffer_node *next;  /**< a pointer to the next node*/
-    sensor_data_t data;         /**< a structure containing the data */
-} sbuffer_node_t;
 
-/**
- * a structure to keep track of the buffer
- */
-struct sbuffer {
-    sbuffer_node_t *head;       /**< a pointer to the first node in the buffer */
-    sbuffer_node_t *tail;       /**< a pointer to the last node in the buffer */
-    pthread_mutex_t mutex;    // Mutex
-    pthread_cond_t cond_var;  // Condition variable
-};
 
 //DONE
 void sbuffer_init() {
@@ -98,6 +82,31 @@ int sbuffer_remove(sensor_data_t *data) {
 
     return SBUFFER_SUCCESS;
 }
+
+
+int sbuffer_read(sbuffer_node_t **node, sensor_data_t *data) {
+    // No mention is ever made of a bounded buffer, I'll just assume an infinite amount of RAM then :P
+    // No deleting reads = no mutex = no headaches.
+    ERROR_HANDLER(buffer == NULL, "Buffer is NULL.");
+    if (buffer->head == NULL) return SBUFFER_NO_DATA; //List is empty
+
+    if (*node == NULL) {
+        // No node selected, start from head.
+        *data = buffer->head->data;
+        *node = buffer->head;
+        return SBUFFER_SUCCESS;
+    } else if ((*node)->next != NULL) {
+        // Node selected, start from there.
+        *data = (*node)->next->data;
+        *node = (*node)->next;
+        return SBUFFER_SUCCESS;
+    } else {
+        // List has no data.
+        return SBUFFER_NO_DATA;
+    }
+}
+
+
 
 
 int sbuffer_insert(sensor_data_t *data) {

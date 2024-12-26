@@ -15,6 +15,21 @@
 typedef struct sbuffer sbuffer_t;
 
 /**
+ * basic node for the buffer, these nodes are linked together to create the buffer
+ */
+typedef struct sbuffer_node {
+ struct sbuffer_node *next;
+ sensor_data_t data;
+} sbuffer_node_t;
+
+struct sbuffer {
+ sbuffer_node_t *head;
+ sbuffer_node_t *tail;
+ pthread_mutex_t mutex;
+ pthread_cond_t cond_var;
+};
+
+/**
  * Allocates and initializes a new shared buffer
  * \param buffer a double pointer to the buffer that needs to be initialized
  * \return SBUFFER_SUCCESS on success and SBUFFER_FAILURE if an error occurred
@@ -36,6 +51,8 @@ void sbuffer_free();
  * \return SBUFFER_SUCCESS on success and SBUFFER_FAILURE if an error occurred
  */
 int sbuffer_remove(sensor_data_t *data);
+
+int sbuffer_read(sbuffer_node_t **node, sensor_data_t *data);
 
 /**
  * Inserts the sensor data in 'data' at the end of 'buffer' (at the 'tail')
