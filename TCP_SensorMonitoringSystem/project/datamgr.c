@@ -12,12 +12,14 @@
 #include <pthread.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <signal.h>
+
 
 
 
 #define SENSOR_MAP "room_sensor.map"
 
-static pthread_mutex_t file_write_mutex = PTHREAD_MUTEX_INITIALIZER;
+//static pthread_mutex_t file_write_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static dplist_t *data_list;
 
@@ -40,7 +42,18 @@ static sensor_value_t get_running_avg(sensor_value_t const window_running_avg[RU
 }
 
 
-static void datamgr_print_sensors() { // for testing, local to datamgr.c
+volatile sig_atomic_t keep_running = 1;
+
+void handle_signal(int signal) {
+    keep_running = 0;
+}
+
+//signal(SIGINT, handle_signal);
+//signal(SIGTERM, handle_signal);
+
+
+
+static void datamgr_print_sensors() { // for testing
     if (!data_list || dpl_size(data_list) == 0) {
         printf("The list is empty.\n");
         return;
@@ -63,6 +76,7 @@ static void datamgr_print_sensors() { // for testing, local to datamgr.c
         }
     }
 }
+
 
 
 
@@ -103,6 +117,19 @@ void *element_copy(void *element) {
     return (void *)copy;
 }
 
+
+void datamgr_free() {
+
+    if (!data_list) {
+        fprintf(stderr, "Error: data_list is NULL during free.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    dpl_free(&data_list, true);
+
+}
+
+
 void * data_manager_init(){
 
     FILE *fp_sensor_map = fopen(SENSOR_MAP, "r");
@@ -137,47 +164,75 @@ void * data_manager_init(){
         dpl_insert_at_index(data_list, e, 0, false); //puts new element at front of list
     }
 
-    sensor_data_t data;
     sbuffer_node_t *node = NULL; //This makes the datamgr remember its last position.
+//    FILE *file_out_dmgr = fopen("data_mgr_read.csv", false ? "a" : "w");
+    sensor_data_t record;
 
+    while (keep_running) { // waits for element
 
-    FILE *file_out_dmgr = fopen("data_mgr_read.csv", false ? "a" : "w"); //TODO: change to append mode, write mode testing only
+        // Get all the data in the buffer, if no data is available, sleep for 1 us waiting for new data to come in.
+        do {
+            int res = sbuffer_read(&node, &record);
+            if (res != SBUFFER_NO_DATA) break;
+            usleep(1); // Requires GNU_SOURCE
+            if (!keep_running) return NULL; // Exit gracefully
+        } while (1);
 
-    while (1) { //process that reads from buffer //temp - just for buffer testing
-        sbuffer_read(&node, &data);
-        if (data.id == 0) { // End-of-stream marker
-            static int eos_count = 0; // Track how many threads have terminated
-            eos_count++;
-            if (eos_count < 1) { //TODO: initial tests only for 1 reader
-                sbuffer_insert(&data); // Reinsert for remaining readers
+        if (record.id == 0 || !keep_running) break; // Stop if EOF in buffer.
+
+        list_element *tmp = NULL;
+        int found = false;
+        for (int i = 0; i < dpl_size(data_list); ++i) {
+            tmp = (list_element *) dpl_get_element_at_index(data_list, i);
+            if (tmp->sensor_id == record.id) {
+                found = true;
+                break;
             }
-            break;
         }
-        pthread_mutex_lock(&file_write_mutex);
-        fprintf(file_out_dmgr, "%hu,%.4f,%ld\n", data.id, data.value, data.ts);
-        fflush(file_out_dmgr);
-        pthread_mutex_unlock(&file_write_mutex);
-        // printf("%hu,%.4f,%ld\n", data.id, data.value, data.ts);//use for testing
-        usleep(25); // Sleep for 0.25ms
+
+        if (found) { //might have to move
+            for (int i = RUN_AVG_LENGTH - 1; i > 0; --i) { //shift right and store values for running avg
+                tmp->window_running_avg[i] = tmp->window_running_avg[i - 1];
+            }
+            //adds values for running avg
+            tmp->window_running_avg[0] = record.value;
+            tmp->last_modified = record.ts;
+
+            //calculate running avg:
+            sensor_value_t running_avg = get_running_avg(tmp->window_running_avg);
+
+            tmp->running_avg_value = running_avg;
+
+            // if (tmp->sensor_id == 132) { //testing
+            //     printf("Sensor id %d, Running Avg: %.2f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified);
+            // }
+
+            //check if between min and max set temps
+            if (running_avg > SET_MAX_TEMP) {
+                //log if temp too high here
+                printf("Sensor id %d is too hot: %.4f Celsius, time: %ld \n", tmp->sensor_id, tmp->running_avg_value, tmp->last_modified);
+            }
+            else if (running_avg < SET_MIN_TEMP) {
+                //log if temp too low here
+                printf("Sensor id %d is too cold: %.4f Celsius\n", tmp->sensor_id, tmp->running_avg_value);
+            }
+            else {
+                //do nothing
+            }
+        }
+        else {
+            printf("Senosr id wrong");
+        }
+
+
     }
 
-    fclose(file_out_dmgr);
-    printf("closing sensor_db process"); //debug line
+    printf("\n\n\n\n\n\n");
+    datamgr_print_sensors();
     return NULL;
 }
 
 
-
-void datamgr_free() {
-
-    if (!data_list) {
-        fprintf(stderr, "Error: data_list is NULL during free.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    dpl_free(&data_list, true);
-
-}
 
 
 /**

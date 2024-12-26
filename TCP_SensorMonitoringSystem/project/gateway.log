@@ -181,3 +181,45 @@
 18 - Thu Dec 26 11:56:56 2024 - Thred recieved exit signal
 19 - Thu Dec 26 11:56:56 2024 - Test server is shutting down
 20 - Thu Dec 26 11:56:56 2024 - DB Closed Successfully
+0 - Thu Dec 26 12:12:27 2024 - Port and Connections defined
+1 - Thu Dec 26 12:12:27 2024 - Data file opened.
+2 - Thu Dec 26 12:12:27 2024 - Test server is started
+3 - Thu Dec 26 12:12:30 2024 - Incomming client connection
+4 - Thu Dec 26 12:12:30 2024 - Incomming client connection succeeded
+5 - Thu Dec 26 12:12:31 2024 - Incomming client connection
+6 - Thu Dec 26 12:12:31 2024 - Incomming client connection succeeded
+7 - Thu Dec 26 12:12:35 2024 - Incomming client connection
+8 - Thu Dec 26 12:12:35 2024 - Incomming client connection succeeded
+9 - Thu Dec 26 12:12:37 2024 - Rejecting excess client connection
+10 - Thu Dec 26 12:12:37 2024 - Closed excess client socket
+11 - Thu Dec 26 12:12:39 2024 - Rejecting excess client connection
+12 - Thu Dec 26 12:12:39 2024 - Closed excess client socket
+13 - Thu Dec 26 12:12:41 2024 - Rejecting excess client connection
+14 - Thu Dec 26 12:12:41 2024 - Closed excess client socket
+15 - Thu Dec 26 12:12:41 2024 - Peer has closed connection
+16 - Thu Dec 26 12:12:41 2024 - Peer has closed connection
+17 - Thu Dec 26 12:12:41 2024 - Peer has closed connection
+18 - Thu Dec 26 12:12:41 2024 - Thred recieved exit signal
+19 - Thu Dec 26 12:12:41 2024 - Test server is shutting down
+20 - Thu Dec 26 12:12:41 2024 - DB Closed Successfully
+0 - Thu Dec 26 12:28:33 2024 - Port and Connections defined
+1 - Thu Dec 26 12:28:34 2024 - Data file opened.
+2 - Thu Dec 26 12:28:34 2024 - Test server is started
+3 - Thu Dec 26 12:28:36 2024 - Incomming client connection
+4 - Thu Dec 26 12:28:36 2024 - Incomming client connection succeeded
+5 - Thu Dec 26 12:28:37 2024 - Incomming client connection
+6 - Thu Dec 26 12:28:37 2024 - Incomming client connection succeeded
+7 - Thu Dec 26 12:28:41 2024 - Incomming client connection
+8 - Thu Dec 26 12:28:41 2024 - Incomming client connection succeeded
+9 - Thu Dec 26 12:28:43 2024 - Rejecting excess client connection
+10 - Thu Dec 26 12:28:43 2024 - Closed excess client socket
+11 - Thu Dec 26 12:28:45 2024 - Rejecting excess client connection
+12 - Thu Dec 26 12:28:45 2024 - Closed excess client socket
+13 - Thu Dec 26 12:28:47 2024 - Rejecting excess client connection
+14 - Thu Dec 26 12:28:47 2024 - Closed excess client socket
+15 - Thu Dec 26 12:28:47 2024 - Peer has closed connection
+16 - Thu Dec 26 12:28:47 2024 - Peer has closed connection
+17 - Thu Dec 26 12:28:47 2024 - Peer has closed connection
+18 - Thu Dec 26 12:28:47 2024 - Thred recieved exit signal
+19 - Thu Dec 26 12:28:47 2024 - Test server is shutting down
+20 - Thu Dec 26 12:28:47 2024 - DB Closed Successfully

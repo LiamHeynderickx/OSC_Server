@@ -10,17 +10,17 @@ sleep 1
 ./sensor_node 2 3 127.0.0.1 $port &
 sleep 2
 #wrong port:
-./sensor_node 100 2 127.0.0.1 1234 &
+./sensor_node 3 2 127.0.0.1 1234 &
 sleep 2
 #
-./sensor_node 3 2 127.0.0.1 $port &
-sleep 2
-#excess nodes
 ./sensor_node 4 2 127.0.0.1 $port &
 sleep 2
-./sensor_node 5 2 127.0.0.1 $port &
+#excess nodes
+./sensor_node 11 2 127.0.0.1 $port &
 sleep 2
-./sensor_node 6 2 127.0.0.1 $port &
+./sensor_node 12 2 127.0.0.1 $port &
+sleep 2
+./sensor_node 13 2 127.0.0.1 $port &
 #terminate
 killall sensor_node
 sleep 5
