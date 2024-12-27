@@ -83,7 +83,7 @@ void log_sensor_temperature_report(int sensorNodeID, bool hot, sensor_value_t ru
 
 void log_invalid_sensor(int sensorNodeID) {
     char message[BUFFER_SIZE];
-    snprintf(message, BUFFER_SIZE, "Recieved sensor data with invalid sensor node ID %d \n", sensorNodeID);
+    snprintf(message, BUFFER_SIZE, "Received sensor data with invalid sensor node ID %d, not added to list. \n", sensorNodeID);
     write_to_log_process(message);
 }
 
@@ -146,7 +146,6 @@ void end_log_process() {
 //        fprintf(stderr, "Error sending terminate message to logger.\n");
 //    }
 
-    write_to_log_process("The data.csv file has been closed.\n");
     write_to_log_process("ending log process.\n");
 
     sleep(1); // Wait for 1s to ensure logger finishes before closing
@@ -195,7 +194,7 @@ void * open_db() { //hosts sbuffer reader process
         if (data.id == 0) { // End-of-stream marker
             static int eos_count = 0; // Track how many threads have terminated
             eos_count++;
-            if (eos_count < 1) { //TODO: initial tests only for 1 reader
+            if (eos_count < 1) {
                 sbuffer_insert(&data); // Reinsert for remaining readers
             }
             break;
@@ -208,6 +207,7 @@ void * open_db() { //hosts sbuffer reader process
 
     write_to_log_process("closing sensor_db process");
     close_db(file_out);
+    write_to_log_process("The data.csv file has been closed.\n");
     return NULL;
 }
 

@@ -98,6 +98,7 @@ void* client_handler(void* arg) {
         else {
             // Insert the received data into the shared buffer
             sbuffer_insert(&data);
+            log_data_insert(id);
         }
 
     } while (result == TCP_NO_ERROR);

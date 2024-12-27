@@ -32,30 +32,6 @@ void sbuffer_init() {
 }
 
 
-//void sbuffer_free() {
-//    pthread_mutex_lock(&write_lock_mtx);
-//    sbuffer_node_struct *dummy;
-//    if (buffer == NULL) {
-//        ERROR_HANDLER(buffer == NULL, "Buffer is NULL.");
-//    }
-//
-//    while (buffer->head) {
-//        dummy = buffer->head;
-//        buffer->head = buffer->head->next;
-//        free(dummy);
-//    }
-//
-//    buffer->head = NULL;  // Ensure head and tail are null
-//    buffer->tail = NULL;
-//
-//    pthread_mutex_unlock(&write_lock_mtx);
-//    //destroy sync variables
-//    pthread_mutex_destroy(&buffer->mutex);
-//    pthread_cond_destroy(&buffer->cond_var);
-//
-//    free(buffer);
-//    buffer = NULL;
-//}
 
 void sbuffer_free() {
     sbuffer_node_struct *current = buffer->head;

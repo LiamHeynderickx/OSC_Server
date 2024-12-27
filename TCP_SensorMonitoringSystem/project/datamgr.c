@@ -202,8 +202,8 @@ void * data_manager_init(){
 
             tmp->running_avg_value = running_avg;
 
-
-            printf("Sensor id %d, Running Avg: %.4f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified); //debug line
+            //I have decided to leave this line as it provides a good indication of the running average and measurements takes.
+            printf("Sensor id %d, Running Avg: %.4f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified); //debug line showing running average
 
             if (running_avg > SET_MAX_TEMP) {
                 log_sensor_temperature_report(tmp->sensor_id, true, tmp->running_avg_value);
@@ -217,14 +217,15 @@ void * data_manager_init(){
         }
         else {
             //happens when sensor ID does not exist in room sensor map
-            log_invalid_sensor(tmp->sensor_id);
+            log_invalid_sensor(record.id); //log that it is not added to list
         }
 
 
     }
 
     printf("\n\n\n\n\n\n");
-    datamgr_print_sensors(); //debug line
+    datamgr_print_sensors(); //debug line: gives final running averages of each sensor. shows that list is correctly populated
+    printf("\n\n\n\n\n\n");
     datamgr_free();
     return NULL;
 }
