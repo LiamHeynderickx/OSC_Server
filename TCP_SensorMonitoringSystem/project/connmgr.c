@@ -94,13 +94,18 @@ void* client_handler(void* arg) {
 
 bool stop_excess_handler = false;
 
-void* excess_client_handler(void* arg) { //this thread is blocking so must be killed
+void* excess_client_handler(void* arg) {
     tcpsock_t* server = (tcpsock_t*)arg;
-    tcpsock_t* client;
+    tcpsock_t* client = NULL;
 
-    signal(SIGUSR1, signal_handler);
+    while (true) {
+        pthread_mutex_lock(&socket_mutex);
+        if (stop_excess_handler) {
+            pthread_mutex_unlock(&socket_mutex);
+            break;
+        }
+        pthread_mutex_unlock(&socket_mutex);
 
-    while (!stop_excess_handler) { // Check the stop signal
         pthread_mutex_lock(&socket_mutex);
         int result = tcp_wait_for_connection(server, &client);
         pthread_mutex_unlock(&socket_mutex);
@@ -110,18 +115,17 @@ void* excess_client_handler(void* arg) { //this thread is blocking so must be ki
             if (conn_counter >= MAX_CONN) {
                 printf("Rejecting excess client connection\n");
                 write_to_log_process("Rejecting excess client connection\n");
-                tcp_close(&client);  // Close the client socket if rejected
+                if (client) {
+                    tcp_close(&client);
+                    client = NULL;
+                }
                 printf("Closed excess client socket\n");
                 write_to_log_process("Closed excess client socket\n");
             }
             pthread_mutex_unlock(&conn_mutex);
-        } else {
-            // Error occurred; ensure client is not left dangling
-            if (client) {
-                tcp_close(&client);  // Clean up socket in case of errors
-                printf("Closed socket after error\n");
-                write_to_log_process("Socket terminated following errors\n");
-            }
+        } else if (client) {
+            tcp_close(&client);
+            client = NULL;
         }
     }
 
@@ -129,6 +133,8 @@ void* excess_client_handler(void* arg) { //this thread is blocking so must be ki
     write_to_log_process("Excess client handler terminating\n");
     return NULL;
 }
+
+
 
 
 void * connmgr_listen(void* arg){
@@ -208,8 +214,11 @@ void * connmgr_listen(void* arg){
     stop_excess_handler = true;
 //    usleep(1000);
     printf("Sending SIGUSR1 to the thread.\n");
-    pthread_kill(excess_thread, SIGUSR1);
+
+    stop_excess_handler = true;
     pthread_join(excess_thread, NULL);
+
+
     printf("Test server is shutting down\n");
     write_to_log_process("Test server is shutting down\n");
     //insert eof
