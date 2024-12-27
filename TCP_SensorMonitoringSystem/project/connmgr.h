@@ -4,6 +4,10 @@
 #include "lib/tcpsock.h"
 #include "config.h"
 
+#ifndef TIMEOUT
+#error TIMEOUT not set
+#endif
+
 // Initializes the server and handles connections
 void * connmgr_listen(void* arg);
 

@@ -58,9 +58,8 @@ void* client_handler(void* arg) {
         result = tcp_receive(client, (void*)&data.ts, &bytes);
         if (result != TCP_NO_ERROR) break;
 
-        //change to send data to buffer
-//        printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
-//               (long int)data.ts);
+        //add a timeout here that closes the client after timeout is reached, TIMEOUT is defined in connmgr.h
+
         sbuffer_insert(&data);
 
     } while (result == TCP_NO_ERROR);

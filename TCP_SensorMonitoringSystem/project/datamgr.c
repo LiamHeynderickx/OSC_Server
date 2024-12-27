@@ -226,7 +226,7 @@ void * data_manager_init(){
             }
         }
         else {
-            printf("Senosr id wrong");
+            printf("Senosr id wrong\n"); //happens when sensor ID does not exist in room sensor map
         }
 
 
