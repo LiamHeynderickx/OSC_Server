@@ -205,7 +205,7 @@ void * open_db() { //hosts sbuffer reader process
         pthread_mutex_unlock(&file_write_mutex);
         }
 
-    write_to_log_process("closing sensor_db process");
+    write_to_log_process("closing sensor_db process\n");
     close_db(file_out);
     write_to_log_process("The data.csv file has been closed.\n");
     return NULL;
