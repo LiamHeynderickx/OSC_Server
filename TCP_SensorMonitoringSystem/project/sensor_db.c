@@ -49,7 +49,7 @@ void write_to_log_process(char *msg) {
 }
 
 
-//specific log messages
+//specific log messages:
 
 void log_sensor_connection(int sensorNodeID) {
     char message[BUFFER_SIZE];
@@ -108,7 +108,7 @@ void create_log_process() {
 
     if (logger_pid == 0) { // Child process
         close(pipe_fd[WRITE_END]);
-        FILE *log_file = fopen(LOG_FILE, "w"); //open in write mode to reset file wwhen server restarts
+        FILE *log_file = fopen(LOG_FILE, "w"); //open in write mode to reset file when server restarts
 
         if (!log_file) {
             ERROR_HANDLER(true, "Log file open failed");
@@ -142,9 +142,6 @@ void create_log_process() {
 }
 
 void end_log_process() {
-//    if (write_to_log_process("Data file closed\n") == -1) { //TODO: add error handler
-//        fprintf(stderr, "Error sending terminate message to logger.\n");
-//    }
 
     write_to_log_process("ending log process.\n");
 
@@ -156,23 +153,16 @@ void end_log_process() {
     }
 
     if (waitpid(logger_pid, NULL, 0) == -1) {
-        perror("Error waiting for logger process to terminate");
-        return;
+        ERROR_HANDLER(true, "error waiting for logger process to terminaate\n");
     }
 
 }
 
 //////////////////////////// Sensor DB process ///////////////////////////////////////////
-//reader process impliments this
+//reader process implements this
 
 
 void * open_db() { //hosts sbuffer reader process
-
-//    if (create_log_process() == -1) { //move to main.c
-//        fprintf(stderr, "Logger creation failed.\n");
-//        fflush(stderr);
-//        return NULL;
-//    }
 
     FILE *file_out = fopen(SENSOR_DB_FILENAME, WRITE_MODE ? "a" : "w");
     if (file_out) {
@@ -211,7 +201,7 @@ void * open_db() { //hosts sbuffer reader process
     return NULL;
 }
 
-void insert_sensor(FILE *f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts) {
+void insert_sensor(FILE *f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts) { //inserts values into .csv
     if (!f) {
         write_to_log_process("File pointer null during insert.\n");
         return;

@@ -45,7 +45,7 @@ void* client_handler(void* arg) {
     time_t current_time = time(NULL);
     bool has_timeout = false; //flag for timeout
     bool logged_already = false;
-    sensor_id_t id = 0; // Saving this id
+    sensor_id_t id = 0; // Saving this id for later use
 
     do {
 
@@ -56,7 +56,7 @@ void* client_handler(void* arg) {
         result = tcp_receive(client, (void*)&data.id, &bytes);
         if (result == TCP_NO_ERROR) {
         } else {
-            break; // Exit loop on error or connection closed
+            break;
         }
 
         //on first data read, id of client must be logged:
@@ -72,7 +72,7 @@ void* client_handler(void* arg) {
         result = tcp_receive(client, (void*)&data.value, &bytes);
         if (result == TCP_NO_ERROR) {
         } else {
-            break; // Exit loop on error or connection closed
+            break;
         }
 
         // Attempt to receive timestamp
@@ -80,14 +80,13 @@ void* client_handler(void* arg) {
         result = tcp_receive(client, (void*)&data.ts, &bytes);
         if (result == TCP_NO_ERROR) {
         } else {
-            break; // Exit loop on error or connection closed
+            break;
         }
 
         current_time = time(NULL);
 
         // Check if the timeout is reached
         if (difftime(current_time, start_time) > TIMEOUT) { // TIMEOUT in seconds
-            // log_sensor_timeout(id);
             has_timeout = true;
             break;
         }
@@ -96,7 +95,7 @@ void* client_handler(void* arg) {
             break;
         }
         else {
-            // Insert the received data into the shared buffer
+            // Insert the received data into the shared buffer and log
             sbuffer_insert(&data);
             log_data_insert(id);
         }
@@ -132,6 +131,8 @@ void* client_handler(void* arg) {
 
 bool stop_excess_handler = false;
 
+
+//the method below handles and closes client connections once max_conn is reached
 void* excess_client_handler(void* arg) {
     tcpsock_t* server = (tcpsock_t*)arg;
     tcpsock_t* client = NULL;
@@ -241,8 +242,8 @@ void * connmgr_listen(void* arg){
     write_to_log_process("Test server is shutting down\n");
 
     //insert eof
-    sensor_data_t data = {0};  // Create an end-of-stream marker on the stack
-	sbuffer_insert(&data);
+    sensor_data_t data = {0};  // Create an end-of-stream marker
+	sbuffer_insert(&data); //insert end of stream to buffer
     free(args);
     return NULL;
 }

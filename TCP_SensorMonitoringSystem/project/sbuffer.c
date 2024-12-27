@@ -16,7 +16,7 @@ sbuffer_t *buffer;
 
 
 
-//DONE
+//initialize buffer process
 void sbuffer_init() {
     //initialize buff and mtx
     pthread_mutex_init(&write_lock_mtx, NULL);
@@ -25,7 +25,6 @@ void sbuffer_init() {
     ERROR_HANDLER(buffer == NULL, "Buffer malloc failed.");
     buffer->head = NULL;
     buffer->tail = NULL;
-
 
     pthread_mutex_init(&(buffer)->mutex, NULL);
     pthread_cond_init(&(buffer)->cond_var, NULL);
@@ -72,7 +71,8 @@ int sbuffer_remove(sensor_data_t *data) { //not used
     return SBUFFER_SUCCESS;
 }
 
-
+//this read function never clears the buffer until server shutdown.
+//this is not ideal as eventually memory will run out.
 int sbuffer_read(sbuffer_node_struct **node, sensor_data_t *data) {
     ERROR_HANDLER(buffer == NULL, "Buffer not initialized");
     if (buffer->head == NULL) return SBUFFER_EMPTY;
