@@ -11,10 +11,7 @@
 #include "connmgr.h"
 #include <stdbool.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <signal.h>
-#include <stdio.h>
-#include <unistd.h>
 #include "sbuffer.h"
 #include <string.h>
 #include "sensor_db.h"
