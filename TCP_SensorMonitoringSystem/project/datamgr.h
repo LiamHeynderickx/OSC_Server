@@ -30,17 +30,6 @@
  * Use ERROR_HANDLER() for handling memory allocation problems, invalid sensor IDs, non-existing files, etc.
  */
 
-//void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data);
-//
-//void datamgr_free();
-//
-//uint16_t datamgr_get_room_id(sensor_id_t sensor_id);
-//
-//sensor_value_t datamgr_get_avg(sensor_id_t sensor_id);
-//
-//time_t datamgr_get_last_modified(sensor_id_t sensor_id);
-//
-//int datamgr_get_total_sensors();
 
 void * data_manager_init();
 

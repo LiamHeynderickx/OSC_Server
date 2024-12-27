@@ -19,16 +19,12 @@
 
 #define SENSOR_MAP "room_sensor.map"
 
-//static pthread_mutex_t file_write_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 static dplist_t *data_list;
 
 typedef struct {
     sensor_id_t sensor_id;
     uint16_t room_id;
     sensor_value_t window_running_avg[RUN_AVG_LENGTH];
-    // int current_index; // To manage circular buffer
-    // int num_readings;  // Track the number of readings (up to RUN_AVG_LENGTH)
     sensor_ts_t last_modified;
     sensor_value_t running_avg_value; //used for debug purposes
 } list_element;
@@ -47,10 +43,6 @@ volatile sig_atomic_t keep_running = 1;
 void handle_signal(int signal) {
     keep_running = 0;
 }
-
-//signal(SIGINT, handle_signal);
-//signal(SIGTERM, handle_signal);
-
 
 
 static void datamgr_print_sensors() { // for testing
@@ -150,7 +142,7 @@ void * data_manager_init(){
         e->room_id = roomID;
 
         for (int i = 0; i < RUN_AVG_LENGTH; i++) {
-            e->window_running_avg[i] = ((float) (SET_MAX_TEMP + SET_MIN_TEMP)) / 2.0; //set values in range so averaage moves from here
+            e->window_running_avg[i] = ((float) (SET_MAX_TEMP + SET_MIN_TEMP)) / 2.0; //set values in range so average moves from here
         }
         e->last_modified = 0;
 
@@ -160,16 +152,13 @@ void * data_manager_init(){
 
     fclose(fp_sensor_map);
 
-    write_to_log_process("Sensor mapping process complete");
+    write_to_log_process("Sensor mapping process complete\n");
 
     //now read data from buffer
-
     sbuffer_node_struct *node = NULL; //This makes the datamgr remember its last position.
-//    FILE *file_out_dmgr = fopen("data_mgr_read.csv", false ? "a" : "w");
     sensor_data_t record;
 
     while (1) { // waits for element
-
         // Get all the data in the buffer, if no data is available, sleep for 1 us waiting for new data to come in.
         do {
             int res = sbuffer_read(&node, &record);
@@ -189,8 +178,8 @@ void * data_manager_init(){
             }
         }
 
-        if (found) { //might have to move
-            for (int i = RUN_AVG_LENGTH - 1; i > 0; --i) { //shift right and store values for running avg
+        if (found) { //store running avg
+            for (int i = RUN_AVG_LENGTH - 1; i > 0; --i) {
                 tmp->window_running_avg[i] = tmp->window_running_avg[i - 1];
             }
             //adds values for running avg
@@ -228,44 +217,4 @@ void * data_manager_init(){
     printf("\n\n\n\n\n\n");
     datamgr_free();
     return NULL;
-}
-
-
-
-
-/**
- * Gets the room ID for a certain sensor ID
- * Use ERROR_HANDLER() if sensor_id is invalid
- * \param sensor_id the sensor id to look for
- * \return the corresponding room id
- */
-uint16_t datamgr_get_room_id(sensor_id_t sensor_id) {
-    return 0;
-}
-
-
-/**
- * Gets the running AVG of a certain senor ID (if less then RUN_AVG_LENGTH measurements are recorded the avg is 0)
- * Use ERROR_HANDLER() if sensor_id is invalid
- * \param sensor_id the sensor id to look for
- * \return the running AVG of the given sensor
- */
-// sensor_value_t datamgr_get_avg(sensor_id_t sensor_id);
-
-
-/**
- * Returns the time of the last reading for a certain sensor ID
- * Use ERROR_HANDLER() if sensor_id is invalid
- * \param sensor_id the sensor id to look for
- * \return the last modified timestamp for the given sensor
- */
-// time_t datamgr_get_last_modified(sensor_id_t sensor_id);
-
-
-/**
- *  Return the total amount of unique sensor ID's recorded by the datamgr
- *  \return the total amount of sensors
- */
-int datamgr_get_total_sensors() {
-    return 0;
 }
