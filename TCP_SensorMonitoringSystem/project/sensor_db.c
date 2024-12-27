@@ -55,46 +55,48 @@ void write_to_log_process(char *msg) {
 
 void log_sensor_connection(int sensorNodeID) {
     char message[BUFFER_SIZE];
-    snprintf(message, BUFFER_SIZE, "Sensor node %d has opened a new connection", sensorNodeID);
+    snprintf(message, BUFFER_SIZE, "Sensor node %d has opened a new connection\n", sensorNodeID);
     write_to_log_process(message);
 }
 
 void log_sensor_termination(int sensorNodeID) {
     char message[BUFFER_SIZE];
-    snprintf(message, BUFFER_SIZE, "Sensor node %d has terminated connection", sensorNodeID);
+    snprintf(message, BUFFER_SIZE, "Sensor node %d has terminated connection\n", sensorNodeID);
     write_to_log_process(message);
 }
 void log_sensor_timeout(int sensorNodeID) {
     char message[BUFFER_SIZE];
-    snprintf(message, BUFFER_SIZE, "Sensor node %d has timed out", sensorNodeID);
+    snprintf(message, BUFFER_SIZE, "Sensor node %d has timed out\n", sensorNodeID);
     write_to_log_process(message);
 }
 
 void log_sensor_temperature_report(int sensorNodeID, bool hot, sensor_value_t running_avg) { //log if sensor too hot or cold
     if (hot) {
         char message[BUFFER_SIZE];
-        snprintf(message, BUFFER_SIZE, "Sensor node %d reports it's too hot (avg temp = %.4f Celsius)", sensorNodeID, running_avg);
+        snprintf(message, BUFFER_SIZE, "Sensor node %d reports it's too hot (avg temp = %.4f Celsius)\n", sensorNodeID, running_avg);
         write_to_log_process(message);
     }
     else {
         char message[BUFFER_SIZE];
-        snprintf(message, BUFFER_SIZE, "Sensor node %d reports it's too cold (avg temp = %.4f Celsius)", sensorNodeID, running_avg);
+        snprintf(message, BUFFER_SIZE, "Sensor node %d reports it's too cold (avg temp = %.4f Celsius)\n", sensorNodeID, running_avg);
         write_to_log_process(message);
     }
 }
 
 void log_invalid_sensor(int sensorNodeID) {
     char message[BUFFER_SIZE];
-    snprintf(message, BUFFER_SIZE, "Recieved sensor data with invalid sensor node ID %d", sensorNodeID);
+    snprintf(message, BUFFER_SIZE, "Recieved sensor data with invalid sensor node ID %d \n", sensorNodeID);
     write_to_log_process(message);
 }
 
 void log_data_insert(int sensorNodeID) {
     char message[BUFFER_SIZE];
-    snprintf(message, BUFFER_SIZE, "Data insertion from sensor %d succeeded", sensorNodeID);
+    snprintf(message, BUFFER_SIZE, "Data insertion from sensor %d succeeded\n", sensorNodeID);
     write_to_log_process(message);
 }
 
+
+//log process host
 void create_log_process() {
     if (pipe(pipe_fd) == -1) {
         printf("Create pipe error\n");

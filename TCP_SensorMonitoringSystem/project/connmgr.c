@@ -29,8 +29,7 @@ bool max_clients = false;
 int MAX_CONN = 0;
 
 void signal_handler(int sig) {
-    printf("Thread received signal %d, exiting.\n", sig);
-    write_to_log_process("Thred recieved exit signal\n");
+    write_to_log_process("Client thread received exit signal, closing\n");
     pthread_exit(NULL);  // Exit the thread cleanly
 }
 
@@ -88,8 +87,7 @@ void* client_handler(void* arg) {
 
         // Check if the timeout is reached
         if (difftime(current_time, start_time) > TIMEOUT) { // TIMEOUT in seconds
-            printf("Client connection time out\n");
-            write_to_log_process("Client connection time out\n");
+            // log_sensor_timeout(id);
             has_timeout = true;
             break;
         }
@@ -105,17 +103,12 @@ void* client_handler(void* arg) {
     } while (result == TCP_NO_ERROR);
 
     if (result == TCP_CONNECTION_CLOSED){
-        printf("Peer has closed connection\n");
-        write_to_log_process("Peer has closed connection\n");
         log_sensor_termination(id);
     }
     else if (has_timeout) {
-        printf("Peer has timed out, connection closed\n");
-        write_to_log_process("Peer has timed out, connection closed\n");
         log_sensor_timeout(id);
     }
     else{
-        printf("Error occurred on connection to peer\n");
         write_to_log_process("Peer connection error\n");
     }
 
@@ -124,7 +117,6 @@ void* client_handler(void* arg) {
 
     pthread_mutex_lock(&conn_mutex);
     conn_terminations++;
-    // printf("terminations = %d\n", conn_terminations);
 
     // Signal the main thread if all connections are terminated
     if (conn_terminations == conn_counter) {
@@ -158,13 +150,11 @@ void* excess_client_handler(void* arg) {
         if (result == TCP_NO_ERROR) {
             pthread_mutex_lock(&conn_mutex);
             if (conn_counter >= MAX_CONN) {
-                printf("Rejecting excess client connection\n");
                 write_to_log_process("Rejecting excess client connection\n");
                 if (client) {
                     tcp_close(&client);
                     client = NULL;
                 }
-                printf("Closed excess client socket\n");
                 write_to_log_process("Closed excess client socket\n");
             }
             pthread_mutex_unlock(&conn_mutex);
@@ -173,8 +163,6 @@ void* excess_client_handler(void* arg) {
             client = NULL;
         }
     }
-
-    printf("Excess client handler exiting.\n");
     write_to_log_process("Excess client handler terminating\n");
     return NULL;
 }
@@ -191,7 +179,6 @@ void * connmgr_listen(void* arg){
     tcpsock_t *server, *client;
     pthread_t thread_id;
 
-    printf("Test server is started\n");
     write_to_log_process("Test server is started\n");
 
     if (tcp_passive_open(&server, PORT) != TCP_NO_ERROR) exit(EXIT_FAILURE);
@@ -208,33 +195,23 @@ void * connmgr_listen(void* arg){
             continue;
         }
 
-        printf("Incoming client connection\n");
-        write_to_log_process("Incomming client connection\n");
+        write_to_log_process("Incoming client connection\n");
 
         pthread_mutex_lock(&conn_mutex);
         if (conn_counter < MAX_CONN) {
             conn_counter++;
             pthread_mutex_unlock(&conn_mutex);
 
-            printf("Incoming client connection succeeded\n");
-            write_to_log_process("Incomming client connection succeeded\n");
-
             // Create a thread for the client
             if (pthread_create(&thread_id, NULL, client_handler, (void*)client) != 0) {
                 perror("Failed to create thread");
-                write_to_log_process("failed to create thread\n");
+                write_to_log_process("failed to create client thread\n");
                 tcp_close(&client);
                 continue;
             }
-
-            // Detach the thread
-            pthread_detach(thread_id);
+            pthread_detach(thread_id); // Detach the thread
         } else { //this else statement is never reached because while loop terminates before this happens
-            // Ensure the mutex is unlocked before rejecting the client
             pthread_mutex_unlock(&conn_mutex);
-
-            // Print rejection message and close the client
-            printf("Max number of clients reached. New connection rejected.\n");
             tcp_close(&client);
         }
 
@@ -250,22 +227,18 @@ void * connmgr_listen(void* arg){
     while (conn_terminations < MAX_CONN) {
         pthread_cond_wait(&conn_cond, &conn_mutex);
     }
+
     pthread_mutex_unlock(&conn_mutex);
     if (tcp_close(&server) != TCP_NO_ERROR) exit(EXIT_FAILURE);
     pthread_mutex_destroy(&conn_mutex);
     pthread_cond_destroy(&conn_cond);
-//    pthread_cancel(excess_thread);
-    // Signal the excess client handler to stop
     stop_excess_handler = true;
-//    usleep(1000);
-    printf("Sending SIGUSR1 to the thread.\n");
 
     stop_excess_handler = true;
     pthread_join(excess_thread, NULL);
 
-
-    printf("Test server is shutting down\n");
     write_to_log_process("Test server is shutting down\n");
+
     //insert eof
     sensor_data_t data = {0};  // Create an end-of-stream marker on the stack
 	sbuffer_insert(&data);

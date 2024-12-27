@@ -55,7 +55,7 @@ void handle_signal(int signal) {
 
 static void datamgr_print_sensors() { // for testing
     if (!data_list || dpl_size(data_list) == 0) {
-        printf("The list is empty.\n");
+        // ERROR_HANDLER(true, "The list is empty");
         return;
     }
 
