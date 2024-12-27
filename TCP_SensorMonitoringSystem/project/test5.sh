@@ -2,7 +2,7 @@ make all
 port=5678
 clients=5
 echo -e "starting gateway "
-valgrind ./sensor_gateway $port $clients &
+valgrind --leak-check=full ./sensor_gateway $port $clients &
 sleep 3
 echo -e 'starting 5 sensor nodes'
 ./sensor_node 15 1 127.0.0.1 $port &
