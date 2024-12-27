@@ -32,6 +32,8 @@ void log_sensor_connection(int sensorNodeID);
 void log_sensor_termination(int sensorNodeID);
 void log_sensor_temperature_report(int sensorNodeID, bool hot, sensor_value_t running_avg);
 void log_sensor_timeout(int sensorNodeID);
+void log_invalid_sensor(int sensorNodeID);
+void log_data_insert(int sensorNodeID);
 
 
 #endif /* _SENSOR_DB_H_ */

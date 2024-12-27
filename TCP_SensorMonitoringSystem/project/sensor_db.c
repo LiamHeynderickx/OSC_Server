@@ -50,6 +50,9 @@ void write_to_log_process(char *msg) {
     }
 }
 
+
+//specific log messages
+
 void log_sensor_connection(int sensorNodeID) {
     char message[BUFFER_SIZE];
     snprintf(message, BUFFER_SIZE, "Sensor node %d has opened a new connection", sensorNodeID);
@@ -86,7 +89,11 @@ void log_invalid_sensor(int sensorNodeID) {
     write_to_log_process(message);
 }
 
-
+void log_data_insert(int sensorNodeID) {
+    char message[BUFFER_SIZE];
+    snprintf(message, BUFFER_SIZE, "Data insertion from sensor %d succeeded", sensorNodeID);
+    write_to_log_process(message);
+}
 
 void create_log_process() {
     if (pipe(pipe_fd) == -1) {
