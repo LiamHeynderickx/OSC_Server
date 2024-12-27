@@ -101,7 +101,7 @@ int sbuffer_insert(sensor_data_t *data) {
     dummy->next = NULL;
 
     pthread_mutex_lock(&buffer->mutex);
-    if (buffer->tail == NULL) // buffer empty (buffer->head should also be NULL
+    if (buffer->tail == NULL) // buffer empty (buffer->head should also be NULL)
     {
         buffer->head = buffer->tail = dummy;
     } else // buffer not empty
