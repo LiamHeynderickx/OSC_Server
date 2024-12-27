@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include "config.h"
 
-typedef enum {
+typedef enum { //TODO: remove
     LOG_NEW_FILE,
     LOG_FILE_OPEN,
     LOG_FILE_CLOSE,
@@ -28,6 +28,10 @@ void write_to_log_process(char *msg);
 void create_log_process();
 void end_log_process();
 void receive_message(int read_fd);
+void log_sensor_connection(int sensorNodeID);
+void log_sensor_termination(int sensorNodeID);
+void log_sensor_temperature_report(int sensorNodeID, bool hot, sensor_value_t running_avg);
+void log_sensor_timeout(int sensorNodeID);
 
 
 #endif /* _SENSOR_DB_H_ */

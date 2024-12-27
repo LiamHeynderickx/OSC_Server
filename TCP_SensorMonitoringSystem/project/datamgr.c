@@ -209,7 +209,7 @@ void * data_manager_init(){
             tmp->running_avg_value = running_avg;
 
 
-            printf("Sensor id %d, Running Avg: %.2f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified);
+            printf("Sensor id %d, Running Avg: %.4f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified);
 
 
             //check if between min and max set temps

@@ -50,6 +50,43 @@ void write_to_log_process(char *msg) {
     }
 }
 
+void log_sensor_connection(int sensorNodeID) {
+    char message[BUFFER_SIZE];
+    snprintf(message, BUFFER_SIZE, "Sensor node %d has opened a new connection", sensorNodeID);
+    write_to_log_process(message);
+}
+
+void log_sensor_termination(int sensorNodeID) {
+    char message[BUFFER_SIZE];
+    snprintf(message, BUFFER_SIZE, "Sensor node %d has terminated connection", sensorNodeID);
+    write_to_log_process(message);
+}
+void log_sensor_timeout(int sensorNodeID) {
+    char message[BUFFER_SIZE];
+    snprintf(message, BUFFER_SIZE, "Sensor node %d has timed out", sensorNodeID);
+    write_to_log_process(message);
+}
+
+void log_sensor_temperature_report(int sensorNodeID, bool hot, sensor_value_t running_avg) { //log if sensor too hot or cold
+    if (hot) {
+        char message[BUFFER_SIZE];
+        snprintf(message, BUFFER_SIZE, "Sensor node %d reports it's too hot (avg temp = %.4f Celsius)", sensorNodeID, running_avg);
+        write_to_log_process(message);
+    }
+    else {
+        char message[BUFFER_SIZE];
+        snprintf(message, BUFFER_SIZE, "Sensor node %d reports it's too cold (avg temp = %.4f Celsius)", sensorNodeID, running_avg);
+        write_to_log_process(message);
+    }
+}
+
+void log_invalid_sensor(int sensorNodeID) {
+    char message[BUFFER_SIZE];
+    snprintf(message, BUFFER_SIZE, "Recieved sensor data with invalid sensor node ID %d", sensorNodeID);
+    write_to_log_process(message);
+}
+
+
 
 void create_log_process() {
     if (pipe(pipe_fd) == -1) {
@@ -66,7 +103,7 @@ void create_log_process() {
 
     if (logger_pid == 0) { // Child process
         close(pipe_fd[WRITE_END]);
-        FILE *log_file = fopen(LOG_FILE, "a");
+        FILE *log_file = fopen(LOG_FILE, "w"); //open in write mode to reset file wwhen server restarts
 
         if (!log_file) {
             printf("fopen error\n");

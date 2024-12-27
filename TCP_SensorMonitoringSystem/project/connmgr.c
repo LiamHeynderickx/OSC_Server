@@ -45,6 +45,8 @@ void* client_handler(void* arg) {
     time_t start_time = time(NULL); //used to detect timeout
     time_t current_time = time(NULL);
     bool has_timeout = false; //flag for timeout
+    bool logged_already = false;
+    sensor_id_t id = 0; // Saving this id
 
     do {
 
@@ -56,6 +58,14 @@ void* client_handler(void* arg) {
         if (result == TCP_NO_ERROR) {
         } else {
             break; // Exit loop on error or connection closed
+        }
+
+        //on first data read, id of client must be logged:
+        if (!logged_already) {
+            //log id
+            logged_already = true;
+            log_sensor_connection(data.id);
+            id = data.id;
         }
 
         // Attempt to receive temperature
@@ -97,10 +107,12 @@ void* client_handler(void* arg) {
     if (result == TCP_CONNECTION_CLOSED){
         printf("Peer has closed connection\n");
         write_to_log_process("Peer has closed connection\n");
+        log_sensor_termination(id);
     }
     else if (has_timeout) {
         printf("Peer has timed out, connection closed\n");
         write_to_log_process("Peer has timed out, connection closed\n");
+        log_sensor_timeout(id);
     }
     else{
         printf("Error occurred on connection to peer\n");

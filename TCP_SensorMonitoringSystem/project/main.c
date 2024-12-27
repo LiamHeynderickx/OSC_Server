@@ -52,6 +52,7 @@
 
 int main(int argc, char *argv[]) {
 
+    //start log and buffer
     sbuffer_init();
     create_log_process();
 
@@ -90,20 +91,15 @@ int main(int argc, char *argv[]) {
 
 
     // Create the thread
-    if (pthread_create(&connmgr, NULL, connmgr_listen, (void*)args) != 0) {
+    if (pthread_create(&connmgr, NULL, connmgr_listen, (void*)args) != 0) { //connection manager
         perror("Failed to create connmgr_listen thread");
         free(args); // Clean up if thread creation fails
         return EXIT_FAILURE;
     }
 
+    pthread_create(&sensor_db, NULL, open_db, NULL); //storage manager
 
-//    pthread_create(&reader1, NULL, reader_thread, (void*)file_out); //replace with sensor_db
-//    pthread_create(&reader2, NULL, reader_thread, (void*)file_out);
-
-
-    pthread_create(&sensor_db, NULL, open_db, NULL);
-
-    pthread_create(&datamgr, NULL, data_manager_init, NULL);
+    pthread_create(&datamgr, NULL, data_manager_init, NULL); //data manager
 
 
 //    printf("waiting for threads to join\n");
