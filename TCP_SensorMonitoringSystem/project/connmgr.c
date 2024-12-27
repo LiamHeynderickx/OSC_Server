@@ -78,8 +78,8 @@ void* client_handler(void* arg) {
 
         // Check if the timeout is reached
         if (difftime(current_time, start_time) > TIMEOUT) { // TIMEOUT in seconds
-            printf("Client connection timed out\n");
-            write_to_log_process("Client connection timed out\n");
+            printf("Client connection time out\n");
+            write_to_log_process("Client connection time out\n");
             has_timeout = true;
             break;
         }
@@ -99,8 +99,8 @@ void* client_handler(void* arg) {
         write_to_log_process("Peer has closed connection\n");
     }
     else if (has_timeout) {
-        printf("Peer has timed out\n");
-        write_to_log_process("Peer has timed out\n");
+        printf("Peer has timed out, connection closed\n");
+        write_to_log_process("Peer has timed out, connection closed\n");
     }
     else{
         printf("Error occurred on connection to peer\n");
