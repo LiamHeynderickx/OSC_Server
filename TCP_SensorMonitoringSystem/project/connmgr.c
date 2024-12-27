@@ -42,31 +42,65 @@ void* client_handler(void* arg) {
     sensor_data_t data;
     int bytes, result;
 
+    time_t start_time = time(NULL); //used to detect timeout
+    time_t current_time = time(NULL);
+    bool has_timeout = false; //flag for timeout
+
     do {
-        // Read sensor ID
+
+        start_time = time(NULL); // time before connection
+
+        // Attempt to receive sensor ID
         bytes = sizeof(data.id);
         result = tcp_receive(client, (void*)&data.id, &bytes);
-        if (result != TCP_NO_ERROR) break;
+        if (result == TCP_NO_ERROR) {
+        } else {
+            break; // Exit loop on error or connection closed
+        }
 
-        // Read temperature
+        // Attempt to receive temperature
         bytes = sizeof(data.value);
         result = tcp_receive(client, (void*)&data.value, &bytes);
-        if (result != TCP_NO_ERROR) break;
+        if (result == TCP_NO_ERROR) {
+        } else {
+            break; // Exit loop on error or connection closed
+        }
 
-        // Read timestamp
+        // Attempt to receive timestamp
         bytes = sizeof(data.ts);
         result = tcp_receive(client, (void*)&data.ts, &bytes);
-        if (result != TCP_NO_ERROR) break;
+        if (result == TCP_NO_ERROR) {
+        } else {
+            break; // Exit loop on error or connection closed
+        }
 
-        //add a timeout here that closes the client after timeout is reached, TIMEOUT is defined in connmgr.h
+        current_time = time(NULL);
 
-        sbuffer_insert(&data);
+        // Check if the timeout is reached
+        if (difftime(current_time, start_time) > TIMEOUT) { // TIMEOUT in seconds
+            printf("Client connection timed out\n");
+            write_to_log_process("Client connection timed out\n");
+            has_timeout = true;
+            break;
+        }
+
+        if (has_timeout) {
+            break;
+        }
+        else {
+            // Insert the received data into the shared buffer
+            sbuffer_insert(&data);
+        }
 
     } while (result == TCP_NO_ERROR);
 
     if (result == TCP_CONNECTION_CLOSED){
         printf("Peer has closed connection\n");
         write_to_log_process("Peer has closed connection\n");
+    }
+    else if (has_timeout) {
+        printf("Peer has timed out\n");
+        write_to_log_process("Peer has timed out\n");
     }
     else{
         printf("Error occurred on connection to peer\n");
