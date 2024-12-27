@@ -6,10 +6,6 @@
 #include <unistd.h>
 #include <wait.h>
 #include <pthread.h>
-#include <limits.h>
-
-//#include "sensor_db.h"
-
 
 #include "connmgr.h"
 #include "sbuffer.h"

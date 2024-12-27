@@ -10,10 +10,13 @@
 #include <pthread.h>
 #include "connmgr.h"
 #include <stdbool.h>
-#include <unistd.h>
 #include <signal.h>
 #include "sbuffer.h"
+#include <bits/sigthread.h>
+#include <time.h>
+#include <unistd.h>
 #include <string.h>
+
 #include "sensor_db.h"
 
 

@@ -12,6 +12,7 @@
 #include "sbuffer.h"
 #include <pthread.h>
 
+
 //////////////////////////// logger process ///////////////////////////////////////////
 
 #define LOG_FILE "gateway.log"

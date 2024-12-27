@@ -3,10 +3,10 @@
  */
 
 
+
 #include "datamgr.h"
 #include "lib/dplist.h"
 #include <stdint.h>
-#include <time.h>
 #include "config.h"
 #include "sbuffer.h"
 #include <pthread.h>
@@ -180,7 +180,6 @@ void * data_manager_init(){
         do {
             int res = sbuffer_read(&node, &record);
             if (res != SBUFFER_EMPTY) break;
-            usleep(1); // Requires GNU_SOURCE
             if (!keep_running) return NULL; // Exit gracefully
         } while (1);
 
