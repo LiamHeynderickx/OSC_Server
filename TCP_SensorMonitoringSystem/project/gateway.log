@@ -279,3 +279,24 @@
 22 - Fri Dec 27 11:11:46 2024 - Threads joined
 23 - Fri Dec 27 11:11:46 2024 - Data file closed
 24 - Fri Dec 27 11:11:46 2024 - ending log process
+0 - Fri Dec 27 12:27:59 2024 - Port and Connections defined
+2 - Fri Dec 27 12:27:59 2024 - Test server is started
+1 - Fri Dec 27 12:27:59 2024 - Data file opened.
+3 - Fri Dec 27 12:27:59 2024 - Waiting for threads to join
+4 - Fri Dec 27 12:28:01 2024 - Incomming client connection
+5 - Fri Dec 27 12:28:01 2024 - Incomming client connection succeeded
+6 - Fri Dec 27 12:28:04 2024 - Incomming client connection
+7 - Fri Dec 27 12:28:04 2024 - Incomming client connection succeeded
+8 - Fri Dec 27 12:28:06 2024 - Incomming client connection
+9 - Fri Dec 27 12:28:06 2024 - Incomming client connection succeeded
+10 - Fri Dec 27 12:28:17 2024 - Rejecting excess client connection
+11 - Fri Dec 27 12:28:17 2024 - Closed excess client socket
+12 - Fri Dec 27 12:28:28 2024 - Peer has closed connection
+13 - Fri Dec 27 12:28:28 2024 - Peer has closed connection
+14 - Fri Dec 27 12:28:28 2024 - Peer has closed connection
+15 - Fri Dec 27 12:28:28 2024 - Excess client handler terminating
+16 - Fri Dec 27 12:28:28 2024 - Test server is shutting down
+17 - Fri Dec 27 12:28:28 2024 - DB Closed Successfully
+18 - Fri Dec 27 12:28:28 2024 - Threads joined
+19 - Fri Dec 27 12:28:28 2024 - Data file closed
+20 - Fri Dec 27 12:28:28 2024 - ending log process

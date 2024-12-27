@@ -1,5 +1,5 @@
 /**
- * \author {AUTHOR}
+* \author {AUTHOR}
  */
 
 #ifndef _CONFIG_H_
@@ -17,10 +17,10 @@
  * [1] Gurpreet.S, “Trying to use error handling in C,” Stack Overflow, May 14, 2018. https://stackoverflow.com/questions/50338211/trying-to-use-error-handling-in-c
  */
 #define ERROR_HANDLER(condition, ...)    do {\
-    if (condition) {\
-    printf("\nError: in %s - function %s at line %d: %s\n", __FILE__, __func__, __LINE__, __VA_ARGS__);\
-    exit(EXIT_FAILURE);\
-    }\
+if (condition) {\
+printf("\nError: in %s - function %s at line %d: %s\n", __FILE__, __func__, __LINE__, __VA_ARGS__);\
+exit(EXIT_FAILURE);\
+}\
 } while(0)
 
 
