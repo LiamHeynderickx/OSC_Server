@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <signal.h>
 
-
+#include "sensor_db.h"
 
 
 #define SENSOR_MAP "room_sensor.map"
@@ -55,8 +55,7 @@ void handle_signal(int signal) {
 
 static void datamgr_print_sensors() { // for testing
     if (!data_list || dpl_size(data_list) == 0) {
-        // ERROR_HANDLER(true, "The list is empty");
-        return;
+        ERROR_HANDLER(true, "The list is empty");
     }
 
     for (int i = 0; i < dpl_size(data_list); i++) { //prints from data list
@@ -106,8 +105,7 @@ void *element_copy(void *element) {
     list_element *copy = malloc(sizeof(list_element));
 
     if (!copy) {
-        fprintf(stderr, "Error: Memory allocation failed in element_copy.\n");
-        exit(EXIT_FAILURE);
+        ERROR_HANDLER(true, "Memory allocation failed in element_copy");
     }
 
     // Perform a shallow copy of the element
@@ -119,16 +117,11 @@ void *element_copy(void *element) {
 
 
 void datamgr_free() {
-
     if (!data_list) {
-        fprintf(stderr, "Error: data_list is NULL during free.\n");
-        exit(EXIT_FAILURE);
+        ERROR_HANDLER(true, "data_list is NULL during free");
     }
-
     dpl_free(&data_list, true);
-//    data_list = NULL;  // Prevent dangling pointer
     ERROR_HANDLER(data_list != NULL, "Error freeing list");
-
 }
 
 
@@ -137,9 +130,9 @@ void * data_manager_init(){
     FILE *fp_sensor_map = fopen(SENSOR_MAP, "r");
 
     if (!fp_sensor_map) {
-        fprintf(stderr, "Error: Sensor map file pointer is NULL.\n");
-        exit(EXIT_FAILURE);
+        ERROR_HANDLER(true, "Sensor map file pointer is null");
     }
+    write_to_log_process("Sensor map opened");
 
     data_list = dpl_create(element_copy, element_free, element_compare);
     uint16_t roomID, sensorID;
@@ -150,8 +143,7 @@ void * data_manager_init(){
         list_element *e = (list_element *)malloc(sizeof(list_element));
 
         if (!e) {
-            fprintf(stderr, "Error: Memory allocation for list_element failed.\n");
-            exit(EXIT_FAILURE);
+            ERROR_HANDLER(true, "Error: Memory allocation for list_element failed.\n");
         }
 
         e->sensor_id = sensorID;
@@ -167,6 +159,8 @@ void * data_manager_init(){
     }
 
     fclose(fp_sensor_map);
+
+    write_to_log_process("Sensor mapping process complete");
 
     //now read data from buffer
 
@@ -209,24 +203,21 @@ void * data_manager_init(){
             tmp->running_avg_value = running_avg;
 
 
-            printf("Sensor id %d, Running Avg: %.4f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified);
+            printf("Sensor id %d, Running Avg: %.4f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified); //debug line
 
-
-            //check if between min and max set temps
             if (running_avg > SET_MAX_TEMP) {
-                //log if temp too high here
-                printf("Sensor id %d is too hot: %.4f Celsius, time: %ld \n", tmp->sensor_id, tmp->running_avg_value, tmp->last_modified);
+                log_sensor_temperature_report(tmp->sensor_id, true, tmp->running_avg_value);
             }
             else if (running_avg < SET_MIN_TEMP) {
-                //log if temp too low here
-                printf("Sensor id %d is too cold: %.4f Celsius\n", tmp->sensor_id, tmp->running_avg_value);
+                log_sensor_temperature_report(tmp->sensor_id, false, tmp->running_avg_value);
             }
             else {
                 //do nothing
             }
         }
         else {
-            printf("Senosr id wrong\n"); //happens when sensor ID does not exist in room sensor map
+            //happens when sensor ID does not exist in room sensor map
+            log_invalid_sensor(tmp->sensor_id);
         }
 
 

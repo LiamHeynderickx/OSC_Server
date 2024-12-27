@@ -34,8 +34,7 @@ pthread_mutex_t file_write_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void write_to_log_process(char *msg) {
     if (logger_pid == 0) {
-        fprintf(stderr, "Logger process not initialized.\n");
-        return;
+        ERROR_HANDLER(true, "Logger process not initialized.\n");
     }
 
     char formatted_msg[BUFFER_SIZE];
@@ -45,8 +44,7 @@ void write_to_log_process(char *msg) {
     // Write the formatted message to the pipe
     ssize_t bytes_written = write(pipe_fd[1], formatted_msg, strlen(formatted_msg));
     if (bytes_written == -1) {
-        perror("Error writing to pipe");
-        return;
+        ERROR_HANDLER(true, "error writing to pipe\n");
     }
 }
 
@@ -99,15 +97,13 @@ void log_data_insert(int sensorNodeID) {
 //log process host
 void create_log_process() {
     if (pipe(pipe_fd) == -1) {
-        printf("Create pipe error\n");
-        return;
+        ERROR_HANDLER(true, "create pipe error\n");
     }
 
     logger_pid = fork();
 
     if (logger_pid == -1) {
-        printf("Fork error\n");
-        return;
+        ERROR_HANDLER(true, "Fork error\n");
     }
 
     if (logger_pid == 0) { // Child process
@@ -115,8 +111,7 @@ void create_log_process() {
         FILE *log_file = fopen(LOG_FILE, "w"); //open in write mode to reset file wwhen server restarts
 
         if (!log_file) {
-            printf("fopen error\n");
-            return;
+            ERROR_HANDLER(true, "Log file open failed");
         }
 
         char buffer[BUFFER_SIZE];
@@ -151,8 +146,8 @@ void end_log_process() {
 //        fprintf(stderr, "Error sending terminate message to logger.\n");
 //    }
 
-    write_to_log_process("Data file closed\n");
-    write_to_log_process("ending log process\n");
+    write_to_log_process("The data.csv file has been closed.\n");
+    write_to_log_process("ending log process.\n");
 
     sleep(1); // Wait for 1s to ensure logger finishes before closing
 
@@ -166,7 +161,6 @@ void end_log_process() {
         return;
     }
 
-     printf("Logger process terminated successfully.\n");
 }
 
 //////////////////////////// Sensor DB process ///////////////////////////////////////////
@@ -181,11 +175,12 @@ void * open_db() { //hosts sbuffer reader process
 //        return NULL;
 //    }
 
-    FILE *file_out = fopen(SENSOR_DB_FILENAME, WRITE_MODE ? "a" : "w"); //TODO: change to append mode, write mode testing only
+    FILE *file_out = fopen(SENSOR_DB_FILENAME, WRITE_MODE ? "a" : "w");
     if (file_out) {
-        write_to_log_process("Data file opened.\n");
+        write_to_log_process("A new data.csv file has been created\n");
     } else {
-        write_to_log_process("Error opening data file.\n");
+        write_to_log_process("Error opening data.csv file.\n");
+        ERROR_HANDLER(true, "Error opening data.csv file.\n");
     }
 
     sensor_data_t data;
@@ -209,10 +204,9 @@ void * open_db() { //hosts sbuffer reader process
         fprintf(file_out, "%hu,%.4f,%ld\n", data.id, data.value, data.ts);
         fflush(file_out);
         pthread_mutex_unlock(&file_write_mutex);
-        // printf("%hu,%.4f,%ld\n", data.id, data.value, data.ts);//use for testing
         }
 
-    printf("closing sensor_db process"); //debug line
+    write_to_log_process("closing sensor_db process");
     close_db(file_out);
     return NULL;
 }
@@ -225,7 +219,6 @@ void insert_sensor(FILE *f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts
 
     ts = time(NULL);
 
-    // printf("Inserting: ID=%d, Value=%lf, Timestamp=%ld\n", id, value, ts); //used for error checking
     write_to_log_process("Attempting to insert data.\n");
 
     int ret = fprintf(f, "%" PRIu16 ", %lf, %li\n", id, value, ts);
@@ -241,9 +234,8 @@ void insert_sensor(FILE *f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts
 
 void close_db(FILE *f) {
     if (f == NULL) {
-        fprintf(stderr, "ERROR: close_db() called with NULL pointer.\n");
         write_to_log_process("ERROR: Attempted to close a NULL file pointer.\n");
-        return;
+        ERROR_HANDLER(true, "ERROR: Attempted to close a NULL file pointer.\n");
     }
 
     if (fflush(f) == EOF) {
@@ -254,17 +246,9 @@ void close_db(FILE *f) {
     }
 
     if (fclose(f) != 0) {
-        fprintf(stderr, "ERROR: fclose() failed.\n");
         write_to_log_process("ERROR: Failed to close the data file.\n");
-        return;
+        ERROR_HANDLER(true, "ERROR: Failed to close the data file.\n");
     }
-
-    // write_to_log_process("Data file closed successfully.\n");
-
-//    if (end_log_process() != 0) { //move to main.c
-//        fprintf(stderr, "ERROR: Failed to terminate the logger process.\n");
-//        return -1;
-//    }
 
     write_to_log_process("DB Closed Successfully\n");
 }
