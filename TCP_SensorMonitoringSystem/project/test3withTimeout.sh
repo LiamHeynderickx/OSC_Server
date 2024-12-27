@@ -11,7 +11,7 @@ sleep 2
 sleep 2
 ./sensor_node 37 2 127.0.0.1 $port &
 sleep 11
-#./sensor_node 37 2 127.0.0.1 $port & #excess client is rejected
+./sensor_node 37 2 127.0.0.1 $port & #excess client is rejected
 sleep 11
 killall sensor_node
 sleep 10

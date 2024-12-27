@@ -124,7 +124,7 @@ void * data_manager_init(){
     if (!fp_sensor_map) {
         ERROR_HANDLER(true, "Sensor map file pointer is null");
     }
-    write_to_log_process("Sensor map opened");
+    write_to_log_process("Sensor map opened\n");
 
     data_list = dpl_create(element_copy, element_free, element_compare);
     uint16_t roomID, sensorID;
@@ -191,8 +191,9 @@ void * data_manager_init(){
 
             tmp->running_avg_value = running_avg;
 
-            //I have decided to leave this line as it provides a good indication of the running average and measurements takes.
-            printf("Sensor id %d, Running Avg: %.4f Celsius, time: %ld \n", tmp->sensor_id, running_avg, tmp->last_modified); //debug line showing running average
+            //I have decided to leave this line as it provides a good indication of the running average and measurements taken
+            //uncomment to see
+            //printf("Sensor id %d, Temp Measurement: %.4f, Running Avg: %.4f Celsius, time: %ld \n", tmp->sensor_id, record.value,running_avg, tmp->last_modified); //debug line showing running average
 
             if (running_avg > SET_MAX_TEMP) {
                 log_sensor_temperature_report(tmp->sensor_id, true, tmp->running_avg_value);
@@ -212,8 +213,9 @@ void * data_manager_init(){
 
     }
 
-    printf("\n\n\n\n\n\n");
+    printf("\n\n\nFINAL RUNNING AVERAGES AND TIMESTAMPS:\n\n\n");
     datamgr_print_sensors(); //debug line: gives final running averages of each sensor. shows that list is correctly populated
+    //I decided to keep this line as it gives a good overview of the sensors at server termination
     printf("\n\n\n\n\n\n");
     datamgr_free();
     return NULL;

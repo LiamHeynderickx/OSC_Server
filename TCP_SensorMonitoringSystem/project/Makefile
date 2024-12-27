@@ -85,6 +85,5 @@ connWithBuff : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h s
 ConnLogBuff : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c sensor_db.c sensor_db.h
 	gcc -g -Wall connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c sensor_db.c sensor_db.h -o ConnBuffLog.out
 
-
 allTog : connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c sensor_db.c sensor_db.h datamgr.c datamgr.h lib/dplist.h lib/dplist.c
 	gcc -g -Wall connmgr.c connmgr.h config.h main.c lib/tcpsock.c lib/tcpsock.h sbuffer.h sbuffer.c sensor_db.c sensor_db.h datamgr.c datamgr.h lib/dplist.h lib/dplist.c -o allTog.out
