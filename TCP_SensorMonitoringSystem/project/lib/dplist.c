@@ -1,5 +1,5 @@
 /**
-* \author Liam Heynderickx, all function headers and descriptions written by Bert Lagaisse
+* \author Liam Heynderickx
  */
 
 
@@ -53,7 +53,7 @@ void dpl_free(dplist_t **list, bool free_element) {
     while(curr != NULL) {
         next = curr->next;
         if (curr->element != NULL && free_element && (*list)->element_free != NULL) {
-            (*list)->element_free(&curr->element); /////////////////////////////////////////////////
+            (*list)->element_free(&curr->element);
         }
         free(curr);
         curr = next;
@@ -67,22 +67,11 @@ void dpl_free(dplist_t **list, bool free_element) {
 
 dplist_t *dpl_insert_at_index(dplist_t *list, void *element, int index, bool insert_copy) {
 
-    // done: add your code here
      dplist_node_t *ref_at_index, *list_node;
      if (list == NULL) return NULL;
 
      list_node = malloc(sizeof(dplist_node_t));
      if (list_node == NULL) return NULL;
-     // if (list_node == NULL) {
-     //     perror("Failed to allocate memory for new node");
-     //     return NULL; // Handle allocation failure
-     // }
-
-     // //allocate element memory
-     // list_node->element =  malloc(strlen(element) + 1);
-     // strcpy(list_node->element, element);
-
-     //check if to insert element copy or directly insert element
      list_node->element = (insert_copy && list->element_copy != NULL) ? list->element_copy(element) : element;
 
      // pointer drawing breakpoint
@@ -120,38 +109,6 @@ dplist_t *dpl_insert_at_index(dplist_t *list, void *element, int index, bool ins
 }
 
 dplist_t *dpl_remove_at_index(dplist_t *list, int index, bool free_element) {
-
-    //done: add your code here
-
-
-    // if (list == NULL || list->head == NULL) return list;
-    //
-    // dplist_node_t *curr = list->head;
-    // // dplist_node_t *next = curr->next;
-    // // dplist_node_t *prev = curr->prev;
-    // int pos = 0;
-    //
-    // if (index <= 0) {
-    //     list->head = curr->next;
-    //     if (list->head != NULL) list->head->prev = NULL;
-    //     if (free_element && list->element_free) list->element_free(&curr->element);
-    //     free(curr); // free the current node
-    //     return list;
-    // } else {
-    //     int pos = 0;
-    //     while (curr->next != NULL && pos < index) {
-    //         curr = curr->next;
-    //         pos++;
-    //     }
-    //     if (curr->prev != NULL) curr->prev->next = curr->next;
-    //     if (curr->next != NULL) curr->next->prev = curr->prev;
-    // }
-    //
-    // if (free_element && list->element_free) {
-    //     list->element_free(&curr->element);
-    // }
-    // free(curr);
-    // return list;
 
     if (list == NULL || list->head == NULL) return list;
     int count = 0;
@@ -195,8 +152,6 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index, bool free_element) {
 
 int dpl_size(dplist_t *list) {
 
-    //done: add your code here
-
     if(list == NULL) {
         return -1;
     }
@@ -216,7 +171,6 @@ int dpl_size(dplist_t *list) {
 
 void *dpl_get_element_at_index(dplist_t *list, int index) {
 
-    //done: add your code here
     dplist_node_t *nodeAtIndex = dpl_get_reference_at_index(list, index);
     return (nodeAtIndex != NULL) ? nodeAtIndex->element : NULL;
 
@@ -224,7 +178,6 @@ void *dpl_get_element_at_index(dplist_t *list, int index) {
 
 int dpl_get_index_of_element(dplist_t *list, void *element) {
 
-    //done: add your code here
     if (list == NULL || list->head == NULL) return -1;
 
     dplist_node_t *curr = list->head;
@@ -243,9 +196,6 @@ int dpl_get_index_of_element(dplist_t *list, void *element) {
 
 dplist_node_t *dpl_get_reference_at_index(dplist_t *list, int index) {
 
-    //done: add your code here
-
-    //int count = 0 ;
     dplist_node_t *dummy = NULL;
     int count = 0;
 
@@ -266,7 +216,6 @@ dplist_node_t *dpl_get_reference_at_index(dplist_t *list, int index) {
 
 void *dpl_get_element_at_reference(dplist_t *list, dplist_node_t *reference) {
 
-    //done: add your code here
     if (list == NULL || reference == NULL) return NULL;
 
     dplist_node_t *curr = list->head;
