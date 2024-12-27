@@ -1,3 +1,7 @@
+/**
+* \author Liam Heynderickx
+ */
+
 #ifndef CONNMGR_H
 #define CONNMGR_H
 

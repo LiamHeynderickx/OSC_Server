@@ -1,5 +1,5 @@
 /**
-* \author {AUTHOR}
+* \author Liam Heynderickx
  */
 
 #ifndef _CONFIG_H_

@@ -1,5 +1,5 @@
 /**
-* \author Bert Lagaisse
+* \author Liam Heynderickx
  */
 
 #ifndef _SENSOR_DB_H_

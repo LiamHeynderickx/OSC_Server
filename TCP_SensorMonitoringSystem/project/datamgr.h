@@ -1,5 +1,5 @@
 /**
-* \author Liam Heynderickx, all function headers and descriptions written by Bert Lagaisse
+* \author Liam Heynderickx
  */
 
 #ifndef DATAMGR_H_

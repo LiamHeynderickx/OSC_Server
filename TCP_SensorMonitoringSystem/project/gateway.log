@@ -1,79 +1,75 @@
-0 - Fri Dec 27 18:21:24 2024 - Port and Connections defined
-1 - Fri Dec 27 18:21:24 2024 - Test server is started
-2 - Fri Dec 27 18:21:24 2024 - Waiting for threads to join
-3 - Fri Dec 27 18:21:24 2024 - Sensor map opened4 - Fri Dec 27 18:21:24 2024 - Sensor mapping process complete5 - Fri Dec 27 18:21:24 2024 - A new data.csv file has been created
-6 - Fri Dec 27 18:21:27 2024 - Incoming client connection
-7 - Fri Dec 27 18:21:27 2024 - Sensor node 15 has opened a new connection
-8 - Fri Dec 27 18:21:27 2024 - Data insertion from sensor 15 succeeded
-9 - Fri Dec 27 18:21:28 2024 - Data insertion from sensor 15 succeeded
-10 - Fri Dec 27 18:21:29 2024 - Incoming client connection
-12 - Fri Dec 27 18:21:29 2024 - Sensor node 21 has opened a new connection
-11 - Fri Dec 27 18:21:29 2024 - Data insertion from sensor 15 succeeded
-13 - Fri Dec 27 18:21:29 2024 - Data insertion from sensor 21 succeeded
-14 - Fri Dec 27 18:21:30 2024 - Data insertion from sensor 15 succeeded
-15 - Fri Dec 27 18:21:31 2024 - Incoming client connection
-16 - Fri Dec 27 18:21:31 2024 - Data insertion from sensor 15 succeeded
-17 - Fri Dec 27 18:21:31 2024 - Sensor node 15 reports it's too hot (avg temp = 20.0668 Celsius)
-18 - Fri Dec 27 18:21:31 2024 - Sensor node 37 has opened a new connection
-19 - Fri Dec 27 18:21:31 2024 - Data insertion from sensor 37 succeeded
-20 - Fri Dec 27 18:21:32 2024 - Data insertion from sensor 21 succeeded
-21 - Fri Dec 27 18:21:32 2024 - Data insertion from sensor 15 succeeded
-22 - Fri Dec 27 18:21:32 2024 - Sensor node 15 reports it's too hot (avg temp = 20.1958 Celsius)
-23 - Fri Dec 27 18:21:33 2024 - Data insertion from sensor 15 succeeded
-24 - Fri Dec 27 18:21:33 2024 - Data insertion from sensor 37 succeeded
-25 - Fri Dec 27 18:21:33 2024 - Sensor node 15 reports it's too hot (avg temp = 20.3050 Celsius)
-26 - Fri Dec 27 18:21:34 2024 - Data insertion from sensor 15 succeeded
-27 - Fri Dec 27 18:21:34 2024 - Sensor node 15 reports it's too hot (avg temp = 20.4857 Celsius)
-28 - Fri Dec 27 18:21:35 2024 - Data insertion from sensor 21 succeeded
-29 - Fri Dec 27 18:21:35 2024 - Data insertion from sensor 15 succeeded
-30 - Fri Dec 27 18:21:35 2024 - Data insertion from sensor 37 succeeded
-31 - Fri Dec 27 18:21:35 2024 - Sensor node 15 reports it's too hot (avg temp = 20.6529 Celsius)
-32 - Fri Dec 27 18:21:36 2024 - Data insertion from sensor 15 succeeded
-33 - Fri Dec 27 18:21:36 2024 - Sensor node 15 reports it's too hot (avg temp = 20.7938 Celsius)
-34 - Fri Dec 27 18:21:37 2024 - Data insertion from sensor 37 succeeded
-35 - Fri Dec 27 18:21:37 2024 - Data insertion from sensor 15 succeeded
-36 - Fri Dec 27 18:21:37 2024 - Sensor node 15 reports it's too hot (avg temp = 20.9327 Celsius)
-37 - Fri Dec 27 18:21:38 2024 - Data insertion from sensor 21 succeeded
-38 - Fri Dec 27 18:21:38 2024 - Data insertion from sensor 15 succeeded
-39 - Fri Dec 27 18:21:38 2024 - Sensor node 15 reports it's too hot (avg temp = 21.0673 Celsius)
-41 - Fri Dec 27 18:21:39 2024 - Data insertion from sensor 37 succeeded
-40 - Fri Dec 27 18:21:39 2024 - Data insertion from sensor 15 succeeded
-42 - Fri Dec 27 18:21:39 2024 - Sensor node 15 reports it's too hot (avg temp = 21.1378 Celsius)
-43 - Fri Dec 27 18:21:39 2024 - Sensor node 37 reports it's too hot (avg temp = 20.1202 Celsius)
-44 - Fri Dec 27 18:21:40 2024 - Data insertion from sensor 15 succeeded
-45 - Fri Dec 27 18:21:40 2024 - Sensor node 15 reports it's too hot (avg temp = 21.1820 Celsius)
-46 - Fri Dec 27 18:21:41 2024 - Data insertion from sensor 37 succeeded
-47 - Fri Dec 27 18:21:41 2024 - Data insertion from sensor 21 succeeded
-48 - Fri Dec 27 18:21:41 2024 - Sensor node 37 reports it's too hot (avg temp = 20.1056 Celsius)
-49 - Fri Dec 27 18:21:41 2024 - Data insertion from sensor 15 succeeded
-50 - Fri Dec 27 18:21:41 2024 - Sensor node 15 reports it's too hot (avg temp = 21.2418 Celsius)
-51 - Fri Dec 27 18:21:42 2024 - Rejecting excess client connection
-52 - Fri Dec 27 18:21:42 2024 - Closed excess client socket
-53 - Fri Dec 27 18:21:42 2024 - Data insertion from sensor 15 succeeded
-54 - Fri Dec 27 18:21:42 2024 - Sensor node 15 reports it's too hot (avg temp = 21.2715 Celsius)
-55 - Fri Dec 27 18:21:43 2024 - Data insertion from sensor 15 succeeded
-56 - Fri Dec 27 18:21:43 2024 - Data insertion from sensor 37 succeeded
-57 - Fri Dec 27 18:21:43 2024 - Sensor node 15 reports it's too hot (avg temp = 21.2735 Celsius)
-58 - Fri Dec 27 18:21:43 2024 - Sensor node 37 reports it's too hot (avg temp = 20.0665 Celsius)
-59 - Fri Dec 27 18:21:44 2024 - Data insertion from sensor 15 succeeded
-60 - Fri Dec 27 18:21:44 2024 - Sensor node 15 reports it's too hot (avg temp = 21.3259 Celsius)
-61 - Fri Dec 27 18:21:44 2024 - Data insertion from sensor 21 succeeded
-62 - Fri Dec 27 18:21:45 2024 - Data insertion from sensor 15 succeeded
-63 - Fri Dec 27 18:21:45 2024 - Sensor node 15 reports it's too hot (avg temp = 21.3776 Celsius)
-64 - Fri Dec 27 18:21:45 2024 - Data insertion from sensor 37 succeeded
-65 - Fri Dec 27 18:21:46 2024 - Data insertion from sensor 15 succeeded
-66 - Fri Dec 27 18:21:46 2024 - Sensor node 15 reports it's too hot (avg temp = 21.4086 Celsius)
-67 - Fri Dec 27 18:21:47 2024 - Data insertion from sensor 15 succeeded
-68 - Fri Dec 27 18:21:47 2024 - Sensor node 15 has terminated connection
-69 - Fri Dec 27 18:21:47 2024 - Data insertion from sensor 37 succeeded
-70 - Fri Dec 27 18:21:47 2024 - Sensor node 37 has terminated connection
-71 - Fri Dec 27 18:21:47 2024 - Sensor node 15 reports it's too hot (avg temp = 21.4392 Celsius)
-72 - Fri Dec 27 18:21:47 2024 - Data insertion from sensor 21 succeeded
-73 - Fri Dec 27 18:21:47 2024 - Sensor node 21 has terminated connection
-74 - Fri Dec 27 18:21:47 2024 - Excess client handler terminating
-75 - Fri Dec 27 18:21:47 2024 - Test server is shutting down
-76 - Fri Dec 27 18:21:47 2024 - closing sensor_db process
-77 - Fri Dec 27 18:21:47 2024 - DB Closed Successfully
-78 - Fri Dec 27 18:21:47 2024 - The data.csv file has been closed.
-79 - Fri Dec 27 18:21:47 2024 - Threads joined
-80 - Fri Dec 27 18:21:47 2024 - ending log process.
+0 - Fri Dec 27 18:28:57 2024 - Port and Connections defined
+2 - Fri Dec 27 18:28:57 2024 - A new data.csv file has been created
+1 - Fri Dec 27 18:28:57 2024 - Waiting for threads to join
+3 - Fri Dec 27 18:28:57 2024 - Test server is started
+4 - Fri Dec 27 18:28:57 2024 - Sensor map opened5 - Fri Dec 27 18:28:57 2024 - Sensor mapping process complete
+6 - Fri Dec 27 18:29:00 2024 - Incoming client connection
+7 - Fri Dec 27 18:29:00 2024 - Sensor node 15 has opened a new connection
+8 - Fri Dec 27 18:29:00 2024 - Data insertion from sensor 15 succeeded
+9 - Fri Dec 27 18:29:01 2024 - Data insertion from sensor 15 succeeded
+10 - Fri Dec 27 18:29:02 2024 - Incoming client connection
+11 - Fri Dec 27 18:29:02 2024 - Sensor node 21 has opened a new connection
+12 - Fri Dec 27 18:29:02 2024 - Data insertion from sensor 21 succeeded
+13 - Fri Dec 27 18:29:02 2024 - Data insertion from sensor 15 succeeded
+14 - Fri Dec 27 18:29:03 2024 - Data insertion from sensor 15 succeeded
+15 - Fri Dec 27 18:29:04 2024 - Data insertion from sensor 15 succeeded
+16 - Fri Dec 27 18:29:04 2024 - Sensor node 15 reports it's too hot (avg temp = 20.1017 Celsius)
+17 - Fri Dec 27 18:29:04 2024 - Incoming client connection
+18 - Fri Dec 27 18:29:04 2024 - Sensor node 37 has opened a new connection
+19 - Fri Dec 27 18:29:04 2024 - Data insertion from sensor 37 succeeded
+20 - Fri Dec 27 18:29:05 2024 - Data insertion from sensor 15 succeeded
+21 - Fri Dec 27 18:29:05 2024 - Data insertion from sensor 21 succeeded
+22 - Fri Dec 27 18:29:05 2024 - Sensor node 15 reports it's too hot (avg temp = 20.1478 Celsius)
+23 - Fri Dec 27 18:29:06 2024 - Data insertion from sensor 37 succeeded
+24 - Fri Dec 27 18:29:06 2024 - Data insertion from sensor 15 succeeded
+25 - Fri Dec 27 18:29:06 2024 - Sensor node 15 reports it's too hot (avg temp = 20.1766 Celsius)
+26 - Fri Dec 27 18:29:07 2024 - Data insertion from sensor 15 succeeded
+27 - Fri Dec 27 18:29:07 2024 - Sensor node 15 reports it's too hot (avg temp = 20.1752 Celsius)
+28 - Fri Dec 27 18:29:08 2024 - Data insertion from sensor 21 succeeded
+29 - Fri Dec 27 18:29:08 2024 - Data insertion from sensor 15 succeeded
+30 - Fri Dec 27 18:29:08 2024 - Data insertion from sensor 37 succeeded
+31 - Fri Dec 27 18:29:08 2024 - Sensor node 15 reports it's too hot (avg temp = 20.2229 Celsius)
+32 - Fri Dec 27 18:29:09 2024 - Data insertion from sensor 15 succeeded
+33 - Fri Dec 27 18:29:09 2024 - Sensor node 15 reports it's too hot (avg temp = 20.2823 Celsius)
+34 - Fri Dec 27 18:29:10 2024 - Data insertion from sensor 37 succeeded
+35 - Fri Dec 27 18:29:10 2024 - Data insertion from sensor 15 succeeded
+36 - Fri Dec 27 18:29:10 2024 - Sensor node 15 reports it's too hot (avg temp = 20.3291 Celsius)
+37 - Fri Dec 27 18:29:11 2024 - Data insertion from sensor 21 succeeded
+38 - Fri Dec 27 18:29:11 2024 - Data insertion from sensor 15 succeeded
+39 - Fri Dec 27 18:29:11 2024 - Sensor node 15 reports it's too hot (avg temp = 20.3512 Celsius)
+40 - Fri Dec 27 18:29:12 2024 - Data insertion from sensor 37 succeeded
+41 - Fri Dec 27 18:29:12 2024 - Data insertion from sensor 15 succeeded
+42 - Fri Dec 27 18:29:12 2024 - Sensor node 15 reports it's too hot (avg temp = 20.4471 Celsius)
+43 - Fri Dec 27 18:29:13 2024 - Data insertion from sensor 15 succeeded
+44 - Fri Dec 27 18:29:13 2024 - Sensor node 15 reports it's too hot (avg temp = 20.5186 Celsius)
+45 - Fri Dec 27 18:29:14 2024 - Data insertion from sensor 37 succeeded
+46 - Fri Dec 27 18:29:14 2024 - Data insertion from sensor 15 succeeded
+47 - Fri Dec 27 18:29:15 2024 - Rejecting excess client connection
+48 - Fri Dec 27 18:29:15 2024 - Closed excess client socket
+49 - Fri Dec 27 18:29:15 2024 - Data insertion from sensor 21 succeeded
+50 - Fri Dec 27 18:29:15 2024 - Sensor node 15 reports it's too hot (avg temp = 20.5718 Celsius)
+51 - Fri Dec 27 18:29:15 2024 - Data insertion from sensor 15 succeeded
+52 - Fri Dec 27 18:29:15 2024 - Sensor node 15 reports it's too hot (avg temp = 20.6060 Celsius)
+53 - Fri Dec 27 18:29:16 2024 - Data insertion from sensor 37 succeeded
+54 - Fri Dec 27 18:29:16 2024 - Data insertion from sensor 15 succeeded
+55 - Fri Dec 27 18:29:16 2024 - Sensor node 15 reports it's too hot (avg temp = 20.6203 Celsius)
+56 - Fri Dec 27 18:29:17 2024 - Data insertion from sensor 21 succeeded
+57 - Fri Dec 27 18:29:17 2024 - Data insertion from sensor 15 succeeded
+58 - Fri Dec 27 18:29:17 2024 - Sensor node 15 reports it's too hot (avg temp = 20.6158 Celsius)
+59 - Fri Dec 27 18:29:18 2024 - Data insertion from sensor 15 succeeded
+60 - Fri Dec 27 18:29:18 2024 - Sensor node 15 reports it's too hot (avg temp = 20.6412 Celsius)
+61 - Fri Dec 27 18:29:18 2024 - Data insertion from sensor 37 succeeded
+62 - Fri Dec 27 18:29:19 2024 - Data insertion from sensor 15 succeeded
+63 - Fri Dec 27 18:29:19 2024 - Sensor node 15 reports it's too hot (avg temp = 20.6872 Celsius)
+64 - Fri Dec 27 18:29:20 2024 - Sensor node 15 has terminated connection
+65 - Fri Dec 27 18:29:20 2024 - Data insertion from sensor 21 succeeded
+66 - Fri Dec 27 18:29:20 2024 - Sensor node 21 has terminated connection
+67 - Fri Dec 27 18:29:20 2024 - Data insertion from sensor 37 succeeded
+68 - Fri Dec 27 18:29:20 2024 - Sensor node 37 has terminated connection
+69 - Fri Dec 27 18:29:20 2024 - Excess client handler terminating
+70 - Fri Dec 27 18:29:20 2024 - Test server is shutting down
+71 - Fri Dec 27 18:29:20 2024 - closing sensor_db process
+72 - Fri Dec 27 18:29:20 2024 - DB Closed Successfully
+73 - Fri Dec 27 18:29:20 2024 - The data.csv file has been closed.
+74 - Fri Dec 27 18:29:20 2024 - Threads joined
+75 - Fri Dec 27 18:29:20 2024 - ending log process.
