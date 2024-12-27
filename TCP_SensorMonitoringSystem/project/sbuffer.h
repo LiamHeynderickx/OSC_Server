@@ -5,6 +5,8 @@
 #ifndef _SBUFFER_H_
 #define _SBUFFER_H_
 
+#include <bits/pthreadtypes.h>
+
 #include "config.h"
 
 

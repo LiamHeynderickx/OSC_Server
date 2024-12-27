@@ -108,7 +108,7 @@ void end_log_process() {
     write_to_log_process("Data file closed\n");
     write_to_log_process("ending log process\n");
 
-    usleep(100000); // Wait for 100ms to ensure logger finishes before closing
+    sleep(1); // Wait for 1s to ensure logger finishes before closing
 
     if (close(pipe_fd[WRITE_END]) == -1) {
         perror("Error closing pipe");
@@ -149,7 +149,6 @@ void * open_db() { //hosts sbuffer reader process
         int read_ret;
         do {
             read_ret = sbuffer_read(&node, &data);
-            usleep(10);
         } while (read_ret == SBUFFER_EMPTY);
 
         if (data.id == 0) { // End-of-stream marker
@@ -165,7 +164,6 @@ void * open_db() { //hosts sbuffer reader process
         fflush(file_out);
         pthread_mutex_unlock(&file_write_mutex);
         // printf("%hu,%.4f,%ld\n", data.id, data.value, data.ts);//use for testing
-        usleep(25); // Sleep for 0.25ms
         }
 
     printf("closing sensor_db process"); //debug line

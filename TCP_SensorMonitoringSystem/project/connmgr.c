@@ -123,7 +123,6 @@ void* excess_client_handler(void* arg) { //this thread is blocking so must be ki
                 write_to_log_process("Socket terminated following errors\n");
             }
         }
-        usleep(1000); // Prevent busy waiting
     }
 
     printf("Excess client handler exiting.\n");

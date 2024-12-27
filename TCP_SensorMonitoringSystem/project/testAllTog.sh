@@ -1,4 +1,4 @@
-make allTog
+make allTog #for testing
 port=5678
 clients=3
 echo -e "starting gateway "

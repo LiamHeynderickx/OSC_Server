@@ -14,8 +14,8 @@
 #endif
 
 //temporary
-#define SET_MAX_TEMP 22
-#define SET_MIN_TEMP 19
+// #define SET_MAX_TEMP 22
+// #define SET_MIN_TEMP 19
 
 
 #ifndef SET_MAX_TEMP
